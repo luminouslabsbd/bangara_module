@@ -21,7 +21,7 @@ $customer_project_data_table = db_prefix() . 'customer_project_data';
 // Check if the table exists
 if (!$CI->db->table_exists($customer_project_data_table)) {
 
-    $events = "'EMAIL_NOT_OPENED', 'CALL_NOT_ANSWERED', 'CALL_REJECTED', 'NEGOTIATION_ACCEPTED', 'PAYMENT_NOT_COMPLETED'";
+    // $events = "'EMAIL_NOT_OPENED', 'CALL_NOT_ANSWERED', 'CALL_REJECTED', 'NEGOTIATION_ACCEPTED', 'PAYMENT_NOT_COMPLETED'";
 
     $query = 'CREATE TABLE `' . $customer_project_data_table . "` (
         `id` bigint(11) NOT NULL AUTO_INCREMENT,
@@ -30,7 +30,7 @@ if (!$CI->db->table_exists($customer_project_data_table)) {
         `project_id` varchar(255) NOT NULL,
         `debt_number` varchar(255) NOT NULL,
         `channel` varchar(255) NOT NULL,
-        `event` ENUM($events) NOT NULL,
+        `event` varchar(255) NOT NULL,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ';';
 
