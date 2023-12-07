@@ -21,7 +21,7 @@
               <th>Project ID</th>
               <th>Debt Number</th>
               <th>Channel</th>
-              
+              <th>Status</th>
             </thead>
             <tbody>
             

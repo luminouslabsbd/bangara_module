@@ -33,26 +33,47 @@
                         
                         <div class="row">
 
-
-                            <div class="form-group col-md-6" app-field-wrapper="customer_id">
-                                <label for="customer_id" class="control-label">customer_id</label><span style="color:red">*</span>
-                                <input type="text" id="customer_id" name="customer_id" require class="form-control">
+                            <div class="form-group col-md-6" app-field-wrapper="email">
+                                <label for="email" class="control-label">Email</label><span style="color:red">*</span>
+                                <input type="email" id="email" name="email" require class="form-control">
                             </div>
 
-                            <div class="form-group col-md-6" app-field-wrapper="project_id">
-                                <label for="project_id" class="control-label">project_id</label><span style="color:red">*</span>
-                                <input type="text" id="project_id" name="project_id" require class="form-control">
+                            <div class="form-group col-md-6" app-field-wrapper="firstname">
+                                <label for="firstname" class="control-label">First Name</label><span style="color:red">*</span>
+                                <input type="text" id="firstname" name="firstname" require class="form-control">
                             </div>
 
-                            <div class="form-group col-md-6" app-field-wrapper="debt_number">
-                                <label for="debt_number" class="control-label">debt_number</label><span style="color:red">*</span>
-                                <input type="text" id="debt_number" name="debt_number" require class="form-control">
+                            <div class="form-group col-md-6" app-field-wrapper="lastname">
+                                <label for="lastname" class="control-label">Last Name</label><span style="color:red">*</span>
+                                <input type="text" id="lastname" name="lastname" require class="form-control">
                             </div>
 
-                            <div class="form-group col-md-6" app-field-wrapper="channel">
-                                <label for="channel" class="control-label">channel</label><span style="color:red">*</span>
-                                <input type="text" id="channel" name="channel" require class="form-control">
+                            <div class="form-group col-md-6" app-field-wrapper="phonenumber">
+                                <label for="phonenumber" class="control-label">Phone Number</label><span style="color:red">*</span>
+                                <input type="number" id="phonenumber" name="phonenumber" require class="form-control">
                             </div>
+
+                            <div class="form-group col-md-6" app-field-wrapper="debt_amount">
+                                <label for="debt_amount" class="control-label">Debt Amount</label><span style="color:red">*</span>
+                                <input type="number" id="debt_amount" name="debt_amount" require class="form-control">
+                            </div>
+
+                            <div class="form-group col-md-6" app-field-wrapper="invoice_number">
+                                <label for="invoice_number" class="control-label">Invoice Number</label><span style="color:red">*</span>
+                                <input type="number" id="invoice_number" name="invoice_number" require class="form-control">
+                            </div>
+
+                            <div class="form-group col-md-6" app-field-wrapper="campaign">
+                                <label for="campaign" class="control-label">Campaign</label><span style="color:red">*</span>
+                                <input type="text" id="campaign" name="campaign" require class="form-control">
+                            </div>
+
+                            <div class="form-group col-md-6" app-field-wrapper="company">
+                                <label for="company" class="control-label">Company</label><span style="color:red">*</span>
+                                <input type="text" id="company" name="company" require class="form-control">
+                            </div>
+
+                            <input type="hidden" id="from_system" name="from_system" value="from_system" class="form-control">
 
                         </div>
                         
@@ -60,13 +81,8 @@
                         <!-- <div class="form-group" app-field-wrapper="content_type">
                             <label for="content_type" class="control-label"></label><span style="color:red">*</span>
                             <input type="text" id="content_type" name="content_type" require class="form-control">
-
                             <input type="text" id="content_type" name="content_type" require class="form-control">
-
                         </div> -->
-
-                        
-
 
                         <!-- <div class="form-group" app-field-wrapper="body_data">
                             <label for="body_data" class="control-label">Body Data - Json</label><span style="color:red">*</span>

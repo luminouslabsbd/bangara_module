@@ -55,7 +55,7 @@ Requires at least: 2.3.*
 
                 $CI->app_menu->add_sidebar_children_item('bangara', [
                     'slug'     => 'api_request_send',
-                    'name'     => "API Request",
+                    'name'     => "Invoice Create API",
                     'href'     => admin_url('bangara_module/bangara_api/api_request_form'),
                     'position' => 2,
                 ]);

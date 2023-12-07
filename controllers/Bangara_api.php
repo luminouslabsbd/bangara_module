@@ -107,7 +107,8 @@ class Bangara_api extends AdminController
             $row[] =$value['project_id'];
             $row[] =$value['debt_number'];
             $row[] =$value['channel'];
-         
+            $row[] =$value['event'];
+            
             $output['aaData'][] = $row;
         }
         echo json_encode($output);
@@ -117,6 +118,56 @@ class Bangara_api extends AdminController
 
     }
 
+    // public function api_request_form($id=''){
+
+    //     $this->load->helper('url');
+    //     $data['title'] = "API Request Form";
+
+    //     if($this->input->post()){
+
+    //         $formData = $this->input->post();
+    //         $url = base_url('index.php/admin/bangara_module/bangara/create_customer_project_data');
+    //         $token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiRGFuaWVsIiwibmFtZSI6IkFQSSBKc29uIiwiQVBJX1RJTUUiOjE2OTg5NDcxMDB9.4ZZKC6CH5vqWG_8FrQ8dAEeKgi6BzlTW890TwytXSck";
+            
+    //         $dataArray = array(
+    //             'customer_id' => $formData['customer_id'],
+    //             'project_id' => $formData['project_id'],
+    //             'debt_number' => $formData['debt_number'],
+    //             'channel' => $formData['channel'], 
+    //         );
+    //         // Convert array to JSON string
+    //         $jsonString = json_encode($dataArray, JSON_PRETTY_PRINT);
+
+    //         $curl = curl_init();
+    //         curl_setopt_array($curl, array(
+    //             CURLOPT_URL => $url,
+    //             CURLOPT_RETURNTRANSFER => true,
+    //             CURLOPT_ENCODING => '',
+    //             CURLOPT_MAXREDIRS => 10,
+    //             CURLOPT_TIMEOUT => 0,
+    //             CURLOPT_FOLLOWLOCATION => true,
+    //             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    //             // CURLOPT_SSL_VERIFYPEER => false,
+    //             CURLOPT_CUSTOMREQUEST => "POST",
+    //             CURLOPT_POSTFIELDS => $jsonString ,
+    //             CURLOPT_HTTPHEADER => array(
+    //                 'Authtoken: ' . $token,
+    //                 'Content-Type: application/json',
+    //               ),
+    //         ));
+
+    //         $response = curl_exec($curl);
+    //         $data['title'] = "API Request Result";
+    //         $data['response'] = $response;
+            
+    //         $this->session->set_userdata('api_request_result', $response);
+    //         redirect('bangara_module/bangara_api/api_request_result');
+    //     }
+
+    //     $this->load->view('api_request_form', $data);
+    
+    // }
+
     public function api_request_form($id=''){
 
         $this->load->helper('url');
@@ -125,15 +176,24 @@ class Bangara_api extends AdminController
         if($this->input->post()){
 
             $formData = $this->input->post();
-            $url = base_url('index.php/admin/bangara_module/bangara/create_customer_project_data');
-            $token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiRGFuaWVsIiwibmFtZSI6IkFQSSBKc29uIiwiQVBJX1RJTUUiOjE2OTg5NDcxMDB9.4ZZKC6CH5vqWG_8FrQ8dAEeKgi6BzlTW890TwytXSck";
+
+            if(isset($formData['from_system'])){
+                $token  = 'from_system';
+            }
+
+            $url = base_url('index.php/admin/bangara_module/bangara/create_invoice');
             
             $dataArray = array(
-                'customer_id' => $formData['customer_id'],
-                'project_id' => $formData['project_id'],
-                'debt_number' => $formData['debt_number'],
-                'channel' => $formData['channel'],
+                'email' => $formData['email'],
+                'firstname' => $formData['firstname'],
+                'lastname' => $formData['lastname'],
+                'phonenumber' => $formData['phonenumber'], 
+                'debt_amount' => $formData['debt_amount'],
+                'invoice_number' => $formData['invoice_number'],
+                'campaign' => $formData['campaign'],
+                'company' => $formData['company'],
             );
+
             // Convert array to JSON string
             $jsonString = json_encode($dataArray, JSON_PRETTY_PRINT);
 
@@ -156,6 +216,7 @@ class Bangara_api extends AdminController
             ));
 
             $response = curl_exec($curl);
+
             $data['title'] = "API Request Result";
             $data['response'] = $response;
             
@@ -165,8 +226,6 @@ class Bangara_api extends AdminController
 
         $this->load->view('api_request_form', $data);
         
-        
-
     }
 
     public function api_request_result(){

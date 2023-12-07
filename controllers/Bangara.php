@@ -343,7 +343,11 @@ class Bangara extends ClientsController {
     public function tokenPermissionCheck(){
 
         $headers = $this->input->request_headers();
-        if(isset($headers['Authtoken'])){
+        $postData = $this->input->post();
+
+        if( isset($headers['Authtoken']) && $headers['Authtoken'] == 'from_system'){
+            $auth = true ;
+        }elseif(isset($headers['Authtoken'])){
             $auth = $this->Bangara_model->authTokenCheck($headers['Authtoken']);
         }else{
             $message = array(
@@ -387,7 +391,7 @@ class Bangara extends ClientsController {
 
         $data = json_decode($rawData, true);
 
-        $requiredKey = ['customer_id','project_id','debt_number','channel'];
+        $requiredKey = ['customer_id','project_id','debt_number','channel','event'];
 
         $isValidation =   $this->formValidation($data,$requiredKey);
 
