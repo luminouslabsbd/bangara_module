@@ -203,5 +203,20 @@ class Bangara_model extends App_Model
         }
     }
 
+    // public function Genarate Invoice ID
+    public function newInvoiceIdCreate(){
+        
+        $this->load->database();
+        $query = $this->db->select_max('number')->get(db_prefix().'invoices');
+        $invoice_id = $query->row()->number;
+
+        if ($invoice_id == null) {
+            return null;
+        } else {
+            return $invoice_id+1;
+        }
+        
+    }
+
     
 }

@@ -48,27 +48,29 @@ class Bangara extends ClientsController {
         // Decode the raw input if it's in JSON format
         $data = json_decode($rawData, true);
         // Send For Data Format Validation 
-        $requiredKeys = ['email', 'firstname', 'lastname', 'phonenumber', 'debt_amount', 'invoice_number', 'campaign', 'company'];
+        $requiredKeys = ['email', 'firstname', 'lastname', 'phonenumber', 'debt_amount','campaign', 'company'];
         $isValidation =   $this->formValidation($data,$requiredKeys);
 
         if($isValidation){
             // This Invoice Number To To Check
-            $isInvoice = $this->Bangara_model->isInvoiceCheck($data['invoice_number']);
+            // $isInvoice = $this->Bangara_model->isInvoiceCheck($data['invoice_number']);
+            $invoiceNumber = $this->Bangara_model->newInvoiceIdCreate();
             // Get Project list_uid From Mail Platform
             $projectId = $this->Bangara_model->getProjectData($data['campaign']);
 
-            if($isInvoice == 'exists'){
-                $message = array(
-                    'code'  => 200,
-                    'status' => TRUE,
-                    'message' => 'This invoice already exists.'
-                );
-                 // Send JSON response
-                header('Content-Type: application/json');
-                echo json_encode($message);
-                exit();
-                // $this->response($message, REST_Controller::HTTP_OK);
-            }
+
+            // if($isInvoice == 'exists'){
+            //     $message = array(
+            //         'code'  => 200,
+            //         'status' => TRUE,
+            //         'message' => 'This invoice already exists.'
+            //     );
+            //      // Send JSON response
+            //     header('Content-Type: application/json');
+            //     echo json_encode($message);
+            //     exit();
+            //     // $this->response($message, REST_Controller::HTTP_OK);
+            // }
             
             $isExists = $this->Bangara_model->isClintCheck($data['email']);
             
@@ -88,15 +90,16 @@ class Bangara extends ClientsController {
                     $this->clients_model->assign_admins($assign, $id);
                     $this->form_contact_data($data ,$id, $contact_id = '');
                     
-                    if($data['invoice_number'] && $data['debt_amount']){
-                        $invoiceData = $this->invoiceData($data,$id);
+                    if($data['phonenumber'] && $data['debt_amount']){
+                        $invoiceData = $this->invoiceData($data,$id,$invoiceNumber);
                         $itemMeta = $this->itemMeta($data);
                         $this->Bangara_model->invoice_create($invoiceData,$itemMeta);
                     }
                     
                     $message = array(
                         'status' => TRUE,
-                        'message' => 'Invoice added successful.'
+                        'message' => 'Invoice added successful.',
+                        'invoice_number' => $invoiceNumber,
                     );
                     header('Content-Type: application/json');
                     echo json_encode($message);
@@ -116,15 +119,16 @@ class Bangara extends ClientsController {
                 
             }else{
                 
-                if($data['invoice_number'] && $data['debt_amount']){
+                if($data['phonenumber'] && $data['debt_amount']){
                     
-                    $invoiceData = $this->invoiceData($data,$isExists);
+                    $invoiceData = $this->invoiceData($data,$isExists,$invoiceNumber);
                     $itemMeta = $this->itemMeta($data);
                     $this->Bangara_model->invoice_create($invoiceData,$itemMeta);
                     $this->Bangara_model->createListSubscriber($data,$projectId);
                     $message = array(
                         'status' => TRUE,
-                        'message' => 'Invoice add successful.'
+                        'message' => 'Invoice add successful.',
+                        'invoice_number' => $invoiceNumber,
                     );
                     header('Content-Type: application/json');
                     echo json_encode($message);
@@ -159,14 +163,14 @@ class Bangara extends ClientsController {
     }
     
     // Make Invoice Insert Data Array 
-    public function invoiceData($data , $clientid){
+    public function invoiceData($data , $clientid,$invoiceNumber){
     
         $invoiceData = array(
             'sent' => 0,
             'datesend' => null,
             'clientid' => $clientid ,
             'deleted_customer_name' => null,
-            'number' => $data['invoice_number'],
+            'number' => $invoiceNumber,
             'prefix' => "INV-",
             'number_format' => 1,
             'datecreated' => date('Y-m-d H:i:s'),
@@ -178,7 +182,7 @@ class Bangara extends ClientsController {
             'total' => $data['debt_amount'],
             'adjustment' =>  0,
             'addedfrom' => 9,
-            'hash' => substr(md5( $data['invoice_number']), 0, 30) ?? '' ,
+            'hash' => substr(md5( $invoiceNumber ), 0, 30) ?? '' ,
             'status' => 1,
             'last_overdue_reminder' => null,
             'last_due_reminder' => null,
@@ -200,6 +204,7 @@ class Bangara extends ClientsController {
             'project_id' => 0,
             'subscription_id' => 0,
         );
+
         return $invoiceData ;
     }
     
