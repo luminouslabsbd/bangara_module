@@ -86,22 +86,28 @@ Requires at least: 2.3.*
     }
 
     function data_modify($tableData){
-        
+
+        $CI        = &get_instance();
+        $CI->load->model('bangara_module/bangara_model');
+        $clintEmail = $CI->bangara_model->clinetEmailGet($tableData->clientid);
+
         $array = [
             'general[name]' => $tableData->name,
-            'general[description]' => isset($tableData->description) ? $tableData->description : "No Description Have",
+            'general[description]' => isset($tableData->description) && $tableData->description != null  ? $tableData->description : "No Description Have",
             'defaults[from_name]' =>  $tableData->client_data->company,
-            'defaults[from_email]' => 'testll@gmail.com',
-            'defaults[reply_to]' => 'testll@gmail.com',
+            'defaults[from_email]' => $clintEmail,
+            'defaults[reply_to]' => $clintEmail,
             'defaults[subject]' => 'Hello',
-            'company[name]' => $tableData->client_data->company,
+            'company[name]' => $tableData->client_data->company && $tableData->client_data->company != null  ? $tableData->client_data->company : "Demo",
             'company[country]' => 'Defult',
-            'company[zone]' => $tableData->client_data->state ?? ' ',
-            'company[address_1]' => $tableData->client_data->address ?? ' ',
-            'company[country_id]' => $tableData->client_data->country ?? ' ',
-            'company[city]' => $tableData->client_data->city ?? ' ',
-            'company[zip_code]' => $tableData->client_data->zip ?? ' ',
+            'company[zone]' => $tableData->client_data->state  && $tableData->client_data->state != null ? $tableData->client_data->state :  'Demo',
+            'company[address_1]' => $tableData->client_data->address && $tableData->client_data->address != null ? $tableData->client_data->address: 'Demo',
+            'company[country_id]' => $tableData->client_data->country && $tableData->client_data->country != null ? $tableData->client_data->country : 1,
+            'company[country_id]' => $tableData->client_data->country && $tableData->client_data->country != null ? $tableData->client_data->country : 1,
+            'company[city]' => $tableData->client_data->city &&  $tableData->client_data->city != null ?  $tableData->client_data->city : 'Demo',
+            'company[zip_code]' => $tableData->client_data->zip &&  $tableData->client_data->zip != null ?  $tableData->client_data->zip: 34656,
         ];
+
         return $array ;
     }
 

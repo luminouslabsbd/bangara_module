@@ -109,6 +109,9 @@ class Bangara_model extends App_Model
             'EMAIL' => $data['email'],
             'FNAME' => $data['firstname'],
             'LNAME' => $data['lastname'],
+            'NUMBER' => $data['phonenumber'],
+            'COMPANY' => $data['company'],
+            'DEBT' => $data['debt_amount'],
         ];
 
         $api = bangara_api_data_get();
@@ -185,6 +188,19 @@ class Bangara_model extends App_Model
             return $get;
         }
         return null;
+    }
+
+    public function clinetEmailGet($id){
+        
+        $this->load->database();
+        $this->db->where('userid', $id);
+        $query = $this->db->get(db_prefix().'contacts');
+        $contact = $query->row();
+        if($contact !== null){
+            return $contact->email ;
+        }else{
+            return false ;
+        }
     }
 
     
