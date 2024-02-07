@@ -111,7 +111,7 @@ class Bangara_model extends App_Model
             'LNAME' => $data['lastname'],
             'NUMBER' => $data['phonenumber'],
             'COMPANY' => $data['company'],
-            'DEBT' => $data['debt_amount'],
+            'DEBT' => (int) $data['debt_amount'],
         ];
 
         $api = bangara_api_data_get();
