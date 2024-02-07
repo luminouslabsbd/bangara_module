@@ -181,18 +181,47 @@ class Bangara_api extends AdminController
                 $token  = 'from_system';
             }
 
+            if(isset($formData['body_data'])) {
+                // Split the string by comma to get each key-value pair
+                $lines = explode(',', $formData['body_data']);
+                $dataArray = array();
+            
+                foreach ($lines as $line) {
+                    // Trim whitespace and remove surrounding double quotes
+                    $line = trim($line);
+                    $line = trim($line, '"');
+                    
+                    // Split each line by colon (:) to get key and value
+                    $pair = explode(':', $line);
+            
+                    // Ensure the pair is in the correct format
+                    if (count($pair) == 2) {
+                        // Trim whitespace and remove surrounding double quotes from key and value
+                        $key = trim($pair[0]);
+                        $value = trim($pair[1], '"');
+            
+                        // Assign key-value pair to the dataArray
+                        $dataArray[$key] = $value;
+                    } else {
+                        // Handle unexpected format
+                        // For example, log an error or display a message
+                        $dataArray = "Error: Unexpected format in line: $line";
+                    }
+                }
+            }
+
             $url = base_url('index.php/admin/bangara_module/bangara/create_invoice');
             
-            $dataArray = array(
-                'email' => $formData['email'],
-                'firstname' => $formData['firstname'],
-                'lastname' => $formData['lastname'],
-                'phonenumber' => $formData['phonenumber'], 
-                'debt_amount' => $formData['debt_amount'],
-                'invoice_number' => $formData['invoice_number'],
-                'campaign' => $formData['campaign'],
-                'company' => $formData['company'],
-            );
+            // $dataArray = array(
+            //     'email' => $formData['email'],
+            //     'firstname' => $formData['firstname'],
+            //     'lastname' => $formData['lastname'],
+            //     'phonenumber' => $formData['phonenumber'], 
+            //     'debt_amount' => $formData['debt_amount'],
+            //     'invoice_number' => $formData['invoice_number'],
+            //     'campaign' => $formData['campaign'],
+            //     'company' => $formData['company'],
+            // );
 
             // Convert array to JSON string
             $jsonString = json_encode($dataArray, JSON_PRETTY_PRINT);

@@ -14,70 +14,44 @@
                 <div class="panel_s">
                     <div class="panel-body">
                         
-                        <!-- <div class="form-group" app-field-wrapper="api_url">
-                            <label for="api_url" class="control-label">API URL</label><span style="color:red">*</span>
-                            <input type="text" id="api_url" name="api_url" require class="form-control">
-                        </div> -->
-
-                        <!-- <div class="form-group">
-                        <label for="method" class="control-label">Method</label><span style="color:red">*</span>
-                            <div class="clearfix"></div>
-                            <div class="dropdown bootstrap-select bs3 open dropup" style="width: 100%;">
-                                <select name="method" class="selectpicker" id="method" data-width="100%" data-none-selected-text="Nothing selected" tabindex="-98">
-                                    <option value="GET">  GET</option>
-                                    <option value="POST"> POST</option>
-                                    <option value="PUT"> PUT</option>
+                        <div class="row">
+                            
+                            <div class="form-group col-md-12" app-field-wrapper="campaign_type">
+                                <label for="email" class="control-label">Campaign Type</label><span style="color:red">*</span>
+                                <select id="campaign_type" name="campaign_type" require class="form-control">
+                                    <option value="">Select Campaign Type</option>
+                                    <option value="VoiceBot">VoiceBot</option>
                                 </select>
                             </div>
-                        </div> -->
-                        
-                        <div class="row">
 
-                            <div class="form-group col-md-6" app-field-wrapper="email">
-                                <label for="email" class="control-label">Email</label><span style="color:red">*</span>
-                                <input type="email" id="email" name="email" require class="form-control">
-                            </div>
-
-                            <div class="form-group col-md-6" app-field-wrapper="firstname">
-                                <label for="firstname" class="control-label">First Name</label><span style="color:red">*</span>
-                                <input type="text" id="firstname" name="firstname" require class="form-control">
-                            </div>
-
-                            <div class="form-group col-md-6" app-field-wrapper="lastname">
-                                <label for="lastname" class="control-label">Last Name</label><span style="color:red">*</span>
-                                <input type="text" id="lastname" name="lastname" require class="form-control">
-                            </div>
-
-                            <div class="form-group col-md-6" app-field-wrapper="phonenumber">
-                                <label for="phonenumber" class="control-label">Phone Number</label><span style="color:red">*</span>
-                                <input type="number" id="phonenumber" name="phonenumber" require class="form-control">
-                            </div>
-
-                            <div class="form-group col-md-6" app-field-wrapper="debt_amount">
-                                <label for="debt_amount" class="control-label">Debt Amount</label><span style="color:red">*</span>
-                                <input type="number" id="debt_amount" name="debt_amount" require class="form-control">
-                            </div>
-
-                            <div class="form-group col-md-6" app-field-wrapper="invoice_number">
-                                <label for="invoice_number" class="control-label">Invoice Number</label><span style="color:red">*</span>
-                                <input type="number" id="invoice_number" name="invoice_number" require class="form-control">
-                            </div>
-
-                            <div class="form-group col-md-6" app-field-wrapper="campaign">
-                                <label for="campaign" class="control-label">Campaign</label><span style="color:red">*</span>
+                            <div class="form-group col-md-12" app-field-wrapper="campaign">
+                                <label for="Campaign" class="control-label">Campaign Name</label><span style="color:red">*</span>
                                 <input type="text" id="campaign" name="campaign" require class="form-control">
+                            </div>  
+
+                            <div>
+                                <button class="apply-button" type="button" id="applyTemplateBtn" style="margin-left: 15px;">Apply Template</button>
                             </div>
 
-                            <div class="form-group col-md-6" app-field-wrapper="company">
-                                <label for="company" class="control-label">Company</label><span style="color:red">*</span>
-                                <input type="text" id="company" name="company" require class="form-control">
+                            <div class="form-group col-md-8">
+                                
+                                <label for="body_data" class="control-label">Body Data - Json</label><span style="color:red">*</span>
+                                <textarea required class="form-control" id="body_data" name="body_data" rows="10" cols="50"></textarea>
                             </div>
+
+                            <div class="form-group col-md-4">
+
+                                <label for="body_data" class="control-label">Text Template</label><span style="color:red">*</span>
+                                <textarea class="form-control" id="body_data_placeholder"  rows="10" cols="50"></textarea>
+                            </div>
+   
+                                
+                        </div>
 
                             <input type="hidden" id="from_system" name="from_system" value="from_system" class="form-control">
 
                         </div>
                         
-
                         <!-- <div class="form-group" app-field-wrapper="content_type">
                             <label for="content_type" class="control-label"></label><span style="color:red">*</span>
                             <input type="text" id="content_type" name="content_type" require class="form-control">
@@ -119,7 +93,39 @@
 </div>
 
 <?php init_tail(); ?>
+<script>
+        
+        document.addEventListener("DOMContentLoaded", function() {
+        const templateData = {
+            "email": "hasnatanha6@gmail.com,",
+            "firstname": "Hasnat,",
+            "lastname": "Tanha,",
+            "phonenumber": "8801854043400,",
+            "debt_amount": "100,",
+            "campaign": "Moniruz Test List,",
+            "company": "MoniruzTestListCompnay,"
+        };
 
+        // Function to apply template
+        function applyTemplate() {
+            const bodyDataTextarea = document.querySelector('#body_data_placeholder');
+            let templateString = '';
+
+            // Construct template string
+            for (const key in templateData) {
+                templateString += `${key}: ${templateData[key]}\n`;
+            }
+
+            // Set template as placeholder
+            bodyDataTextarea.value = templateString;
+        }
+
+        // Button click event listener
+        const applyTemplateBtn = document.getElementById('applyTemplateBtn');
+        applyTemplateBtn.addEventListener('click', applyTemplate);
+    });
+
+</script>
 </body>
 
 </html>
