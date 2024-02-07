@@ -97,13 +97,13 @@
         
         document.addEventListener("DOMContentLoaded", function() {
         const templateData = {
-            "email": "hasnatanha6@gmail.com,",
-            "firstname": "Hasnat,",
-            "lastname": "Tanha,",
-            "phonenumber": "8801854043400,",
-            "debt_amount": "100,",
-            "campaign": "Moniruz Test List,",
-            "company": "MoniruzTestListCompnay"
+            "email":"hasnatanha6@gmail.com,",
+            "firstname":"Hasnat,",
+            "lastname":"Tanha,",
+            "phonenumber":"8801854043400,",
+            "debt_amount":"100,",
+            "campaign":"Moniruz Test List,",
+            "company":"MoniruzTestListCompnay"
         };
 
         // Function to apply template

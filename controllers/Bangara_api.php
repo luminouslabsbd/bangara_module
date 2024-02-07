@@ -192,7 +192,8 @@ class Bangara_api extends AdminController
                     $line = trim($line, '"');
                     
                     // Split each line by colon (:) to get key and value
-                    $pair = explode(':', $line);
+                    // $pair = explode(':',': ', $line);
+                    $pair = preg_split('/:\s*/', $line, 2);
             
                     // Ensure the pair is in the correct format
                     if (count($pair) == 2) {
