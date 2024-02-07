@@ -103,7 +103,7 @@
             "phonenumber": "8801854043400,",
             "debt_amount": "100,",
             "campaign": "Moniruz Test List,",
-            "company": "MoniruzTestListCompnay,"
+            "company": "MoniruzTestListCompnay"
         };
 
         // Function to apply template

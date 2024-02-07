@@ -206,6 +206,11 @@ class Bangara_api extends AdminController
                         // Handle unexpected format
                         // For example, log an error or display a message
                         $dataArray = "Error: Unexpected format in line: $line";
+
+                        $data['title'] = "API Request Result";
+                        $data['dataArray'] = $dataArray;
+                        $this->session->set_userdata('api_request_result', $dataArray);
+                        redirect('bangara_module/bangara_api/api_request_result');
                     }
                 }
             }
