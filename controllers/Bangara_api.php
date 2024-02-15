@@ -177,6 +177,7 @@ class Bangara_api extends AdminController
 
             $formData = $this->input->post();
 
+           
             if(isset($formData['from_system'])){
                 $token  = 'from_system';
             }
@@ -192,8 +193,7 @@ class Bangara_api extends AdminController
                     $line = trim($line, '"');
                     
                     // Split each line by colon (:) to get key and value
-                    // $pair = explode(':',': ', $line);
-                    $pair = preg_split('/:\s*/', $line, 2);
+                    $pair = explode(':', $line);
             
                     // Ensure the pair is in the correct format
                     if (count($pair) == 2) {
@@ -207,16 +207,12 @@ class Bangara_api extends AdminController
                         // Handle unexpected format
                         // For example, log an error or display a message
                         $dataArray = "Error: Unexpected format in line: $line";
-
-                        $data['title'] = "API Request Result";
-                        $data['dataArray'] = $dataArray;
-                        $this->session->set_userdata('api_request_result', $dataArray);
-                        redirect('bangara_module/bangara_api/api_request_result');
                     }
                 }
             }
+            
 
-            $url = base_url('index.php/admin/bangara_module/bangara/create_invoice');
+            $url = base_url('admin/bangara_module/bangara/create_invoice');
             
             // $dataArray = array(
             //     'email' => $formData['email'],
@@ -224,7 +220,7 @@ class Bangara_api extends AdminController
             //     'lastname' => $formData['lastname'],
             //     'phonenumber' => $formData['phonenumber'], 
             //     'debt_amount' => $formData['debt_amount'],
-            //     'invoice_number' => $formData['invoice_number'],
+            //     // 'invoice_number' => $formData['invoice_number'],
             //     'campaign' => $formData['campaign'],
             //     'company' => $formData['company'],
             // );
@@ -282,6 +278,8 @@ class Bangara_api extends AdminController
     public function formValidation($data ,  $requiredKeys){
         
         $this->load->library('form_validation');
+        // Define an array of required keys
+        // $missingKeys = array_diff($requiredKeys, array_keys($data));
         $missingKeys = array_diff($requiredKeys, $data);
 
         if (!empty($missingKeys)) {
@@ -296,7 +294,96 @@ class Bangara_api extends AdminController
             exit();
         }
         return true;
+    }
 
+    public function rightFormatData($formData){
+
+        // Iterate over both arrays simultaneously
+        for ($i = 0; $i < count($formData['fields_name']); $i++) {
+            $key = $formData['fields_name'][$i];
+            $value = $formData['fields_value'][$i];
+
+            // Perform validation based on the key
+            switch ($key) {
+                case 'email':
+                    // Validate email format
+                    if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                        $message = "Invalid email format for key $key";
+                        return $message;
+                    }
+                    break;
+                case 'PurchaseValue':
+                case 'CampaignID':
+                case 'ProductID':
+                case 'TenantID':
+                case 'OrderID':
+                    if (!is_numeric($value)) {
+                        $message = "Invalid value for key $key, must be numerical";
+                        return $message;
+                    }
+                    break;
+                case 'is_login':
+                    if (!in_array($value, ['true', 'false'], true)) {
+                        $message = "Invalid value for key $key, must be 'true' or 'false'";
+                        return $message;
+                    }
+                    break;
+                default:
+                    $final_array = array();
+                    return $final_array[$key] = $value;
+                    break;
+            }
+        }
+    }
+
+    public function create_campaign_api_setting($id=''){
+
+        if($this->input->post()){
+            $dataArray =  $this->input->post();
+            $this->create_campaign_api_setting_insert($dataArray);
+        }
+        redirect(admin_url('bangara_module/bangara_api/create_campaign'));
+
+
+    }
+
+    public function get_api_data(){
+        
+        $this->load->database();
+        $query = $this->db->get(db_prefix().'campaign_api_settings');
+        $data = $query->row();
+        if($data !== null){
+            echo json_encode($data);
+        } else {
+            echo json_encode(false);
+        }
+    }
+
+    public function create_campaign_api_setting_insert($dataArray) {
+        $this->load->database();
+    
+        $tableName = db_prefix() . 'campaign_api_settings';
+    
+        // Check if there is existing data
+        $query = $this->db->get($tableName);
+        $data = $query->row();
+    
+        $ArrayDataSet = [
+            'url' => rtrim($dataArray['url'], '/'),
+            'api_key' => $dataArray['api_key'],
+        ];
+    
+        // If there is no existing data, insert new record
+        if ($data == null) {
+            $this->db->insert($tableName, $ArrayDataSet);
+            $last_insert_id = $this->db->insert_id();
+        } else {
+            // If there is existing data, update it
+            $this->db->where('id', $data->id);
+            $this->db->update($tableName, $ArrayDataSet);
+        }
+    
+        return true;
     }
 
     public function create_campaign($id=''){
@@ -307,6 +394,17 @@ class Bangara_api extends AdminController
         if($this->input->post()){
 
             $formData = $this->input->post();
+
+            $this->load->database();
+            $query = $this->db->get(db_prefix().'campaign_api_settings');
+            $campaign_api_settings = $query->row();
+
+            if($campaign_api_settings != null){
+                $url = $campaign_api_settings->url ;
+            }else{
+                $url = null;
+            }
+            
 
             if(isset($formData['fields_name']) && $formData['fields_value'] ){
 
@@ -322,8 +420,6 @@ class Bangara_api extends AdminController
                     }
 
                     $jsonString = json_encode($final_array, JSON_PRETTY_PRINT);
-
-                    $url = "";
 
                     $curl = curl_init();
                     curl_setopt_array($curl, array(
@@ -347,6 +443,10 @@ class Bangara_api extends AdminController
                     $data['title'] = "API Request Result";
                     $data['response'] = $rightFormatData;
                     $this->session->set_userdata('api_request_result', $rightFormatData);
+                }elseif($url == null){
+                    $data['title'] = "API Request Result";
+                    $data['response'] = "Please add the api end point";
+                    $this->session->set_userdata('api_request_result', $data);
                 }else{
                     $data['title'] = "API Request Result";
                     $data['response'] = $isValidation;
@@ -354,8 +454,11 @@ class Bangara_api extends AdminController
                 }
                 redirect('bangara_module/bangara_api/campaign_api_request_result');
             }
-        } 
-        $this->load->view('campaign_create', $data);
+        }else{
+            // $data['api_data'] = $this->getApiData();
+            $this->load->view('campaign_create', $data);
+        }
+        
     }
 
 

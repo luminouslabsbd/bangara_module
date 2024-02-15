@@ -37,3 +37,16 @@ if (!$CI->db->table_exists($customer_project_data_table)) {
     $CI->db->query($query);
 }
 
+$campaign_api_settings = db_prefix() . 'campaign_api_settings';
+// Check if the table exists
+if (!$CI->db->table_exists($campaign_api_settings)) {
+    $query = 'CREATE TABLE `' . $campaign_api_settings . "` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `url` varchar(255) NOT NULL,
+        `api_key` varchar(255) NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ';';
+
+    $CI->db->query($query);
+}
+

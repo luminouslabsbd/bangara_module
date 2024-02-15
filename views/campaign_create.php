@@ -21,6 +21,12 @@
         width: 40%;
     }
 
+    .panel-footer.text-right{
+        background-color: transparent;
+        border: unset;
+        padding: 0px;
+    }
+
     button.remove-input.btn.btn-danger{
         padding: 20px 25px;
         margin: 0;
@@ -40,12 +46,53 @@
         gap: 20px;
     }
 
+    button.btn.btn-primary.campaingn-modal{
+        margin-bottom: 20px;
+    }
+
 
 </style>
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php init_head(); ?>
 <div id="wrapper">
     <div class="content">
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">API Setting</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="apiForm" action="<?php echo  admin_url('bangara_module/bangara_api/create_campaign_api_setting') ?>" method="post">
+                <div class="modal-body">
+                    <div class="wrapper-spinner-form">
+                        <div class="col-md-12">
+                            <h5>Api Url</h5>
+                            <input type="text" name="url" require class="dynamic-input form-control" />
+                        </div>
+                        <div class="col-md-12">
+                            <h5>Api Key</h5>
+                            <input type="text" name="api_key" class="dynamic-input form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
         <?php echo form_open($this->uri->uri_string(), ['id' => 'article-form']); ?>
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
@@ -53,13 +100,18 @@
                     <h4 class="tw-mt-0 tw-font-semibold tw-text-neutral-700">
                         <span class="tw-text-lg"><?php echo $title; ?></span>
                     </h4>
+
+                    <button type="button" class="btn btn-primary campaingn-modal" data-toggle="modal" data-target="#exampleModal">
+                        API Setting
+                    </button>
                 </div>
+
+                
 
                 <div class="panel_s">
                     <div class="panel-body">
                         
                         <div class="row">
-                            
                             <div class="form-group col-md-12" app-field-wrapper="campaign_type">
                                 <label for="email" class="control-label">Campaign Type</label><span style="color:red">*</span>
                                 <select id="campaign_type" name="campaign_type" require class="form-control">
@@ -75,7 +127,7 @@
 
                             <div class="form-group col-md-10">
                                 <div class="title">
-                                    <button type="button" id="add-input">+ Add Input</button>
+                                    <button type="button" class="btn btn-success" id="add-input">+ Add Input</button>
                                 </div>
 
                                 <div class="spinner-form-wrapper">
@@ -112,13 +164,14 @@
 
                     </div>
 
-                </div>
-                    
-                    <div class="panel-footer text-right">
+                <div class="panel-footer text-right">
                         <button type="submit" class="btn btn-primary">
                             <?php echo _l('submit'); ?>
                         </button>
-                    </div>
+                </div>
+                </div>
+                    
+                    
 
                     <?php if(isset($response) && $response != null){ ?>
                     <div class="form-group" app-field-wrapper="body_data">
@@ -131,6 +184,8 @@
                     <?php } ?>
 
                 </div>
+
+                
             </div>
 
         </div>
@@ -168,6 +223,24 @@ $(document).ready(function () {
         // Remove Input
         $("#input-container").on("click", ".remove-input", function () {
             $(this).parent().remove();
+        });
+    });
+
+    $(document).ready(function(){
+        $('#exampleModal').on('show.bs.modal', function (e) {
+            $.ajax({
+                type: 'GET',
+                url: '<?php echo admin_url('bangara_module/bangara_api/get_api_data') ?>',
+                dataType: 'json',
+                success: function(data){
+                    if(data !== false){
+                        $('#apiForm input[name="url"]').val(data.url);
+                        $('#apiForm input[name="api_key"]').val(data.api_key);
+                    } else {
+                        // Handle if data is not found
+                    }
+                }
+            });
         });
     });
 
