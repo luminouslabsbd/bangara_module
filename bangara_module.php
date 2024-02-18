@@ -65,7 +65,14 @@ Requires at least: 2.3.*
                     'name'     => "Customer Project API",
                     'href'     => admin_url('bangara_module/bangara_api/customer_project_data_list'),
                     'position' => 2,
-                ]);    
+                ]);
+                
+                $CI->app_menu->add_sidebar_children_item('bangara', [
+                    'slug'     => 'campaign_create_request',
+                    'name'     => "Campaign Manager",
+                    'href'     => admin_url('bangara_module/bangara_api/create_campaign'),
+                    'position' => 3,
+                ]);     
             }
         }
     }

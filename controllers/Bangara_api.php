@@ -402,7 +402,7 @@ class Bangara_api extends AdminController
             if($campaign_api_settings != null){
                 $url = $campaign_api_settings->url ;
             }else{
-                $url = null;
+                $url = null ;
             }
             
 
