@@ -290,20 +290,20 @@ class Bangara_api extends AdminController
                 'message' => 'Missing required keys: ' . implode(', ', $missingKeys)
             );
             header('Content-Type: application/json');
-            echo json_encode($message);
+            return json_encode($message);
             exit();
         }
         return true;
     }
-
+    
     public function rightFormatData($formData){
 
         // Iterate over both arrays simultaneously
         for ($i = 0; $i < count($formData['fields_name']); $i++) {
             $key = $formData['fields_name'][$i];
             $value = $formData['fields_value'][$i];
-
             // Perform validation based on the key
+
             switch ($key) {
                 case 'email':
                     // Validate email format
@@ -334,6 +334,7 @@ class Bangara_api extends AdminController
                     break;
             }
         }
+        return $final_array = $value;
     }
 
     public function create_campaign_api_setting($id=''){
@@ -394,7 +395,7 @@ class Bangara_api extends AdminController
         if($this->input->post()){
 
             $formData = $this->input->post();
-
+            
             $this->load->database();
             $query = $this->db->get(db_prefix().'campaign_api_settings');
             $campaign_api_settings = $query->row();
@@ -405,14 +406,14 @@ class Bangara_api extends AdminController
                 $url = null ;
             }
             
-
+             
             if(isset($formData['fields_name']) && $formData['fields_value'] ){
-
+                
                 $requiredKeys = ['TenantID', 'CampaignID', 'ProductID', 'PurchaseValue', 'email','is_login','OrderID'];
                 $isValidation =   $this->formValidation($formData['fields_name'],$requiredKeys);
                 $rightFormatData = $this->rightFormatData($formData);
 
-                if($isValidation && is_array($rightFormatData)){
+                if($isValidation && $rightFormatData){
 
                     $final_array = array();
                     for ($i = 0; $i < count($formData['fields_name']); $i++) {
@@ -420,6 +421,7 @@ class Bangara_api extends AdminController
                     }
 
                     $jsonString = json_encode($final_array, JSON_PRETTY_PRINT);
+                    // $jsonString = json_encode($final_array);
 
                     $curl = curl_init();
                     curl_setopt_array($curl, array(
@@ -430,8 +432,11 @@ class Bangara_api extends AdminController
                         CURLOPT_TIMEOUT => 0,
                         CURLOPT_FOLLOWLOCATION => true,
                         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                        CURLOPT_CUSTOMREQUEST => "POST",
+                        CURLOPT_CUSTOMREQUEST => "GET",
                         CURLOPT_POSTFIELDS => $jsonString ,
+                        CURLOPT_HTTPHEADER => array(
+                            'Content-Type: application/json', // Specify content type as JSON
+                        ),
                     ));
 
                     $response = curl_exec($curl);
@@ -459,6 +464,22 @@ class Bangara_api extends AdminController
             $this->load->view('campaign_create', $data);
         }
         
+    }
+
+    public function campaign_api_request_result(){
+
+        $response = $this->session->userdata('api_request_result');
+        if (!$response) {
+            // Handle the case where there's no response in session
+            redirect('bangara_module/bangara_api/create_campaign');
+        }
+        $data['title'] = "API Result";
+        $data['response'] = $response;
+
+        // Clear the session data after retrieving it
+        $this->session->unset_userdata('api_request_result');
+        $this->load->view('campaign_api_request_result', $data);
+
     }
 
 
