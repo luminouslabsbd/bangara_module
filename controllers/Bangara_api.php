@@ -482,5 +482,89 @@ class Bangara_api extends AdminController
 
     }
 
+    public function create_loyality_customer(){
+
+        if($this->input->method() != "post"){
+            $message = array(
+                'code'  => 400,
+                'status' => FALSE,
+                'message' => 'Method Error'
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+        }
+        
+        $rawData = file_get_contents("php://input");
+        $data = json_decode($rawData, true);
+
+        $requiredKeys = ['email','phonenumber', 'company'];
+        $isValidation =   $this->formValidation($data,$requiredKeys);
+
+        if(!$isValidation){
+
+            $message = array(
+                'code'  => 202,
+                'status' => FALSE,
+                'message' => 'Validation Error'
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+            
+        }
+
+        $isExists = $this->Bangara_model->isClintCheck($data['email']);
+        
+        if(!$isExists ){
+
+            $finalArray = [
+                'company' => $data['company'],
+                'phonenumber' =>$data['phonenumber'],
+            ];
+
+            $email_parts = explode('@',$data['email']);
+
+            // Access the first part of the email address
+            $email_username = $email_parts[0] ?? "Null";
+            $data['firstname'] = $email_username;
+            $data['lastname'] = $email_username;
+
+            $id = $this->clients_model->add($finalArray);
+
+            if( $id){
+
+                $assign['customer_admins']   = [];
+                $assign['customer_admins'][] = get_staff_user_id() ?? 0 ;
+                $this->clients_model->assign_admins($assign, $id);
+                $this->form_contact_data($data ,$id, $contact_id = '');
+            }
+
+            $message = array(
+                'code'  => 200,
+                'status' => true,
+                'crm_customer_id' => $id
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+    
+        }else{
+
+            $message = array(
+                'code'  => 200,
+                'status' => true,
+                'crm_customer_id' => (int) $isExists
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+        }
+    }
+
 
 }
