@@ -17,6 +17,11 @@
         gap: 32px;
     }
 
+    .wrapper-spinner-form-new{
+        display: flex;
+        gap: 0px;
+    }
+
     .spinner-fomr-col{
         width: 40%;
     }
@@ -92,6 +97,99 @@
     </div>
 </div>
 
+<div class="modal fade" id="exampleModalRequired" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Required Keys List</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="apiForm" action="" method="">
+                <div class="modal-body">
+                    <div class="wrapper-spinner-form-new">
+                        <div class="col-md-12">
+                            <h6>TenantID</h6>
+                        </div>
+                        <div class="col-md-12">
+                            <h6>Required - (Tenant ID get from patner account)</h6>
+                        </div>
+                    </div>
+                    <div class="wrapper-spinner-form-new">
+                        <div class="col-md-12">
+                            <h6>CampaignID</h6>
+                        </div>
+                        <div class="col-md-12">
+                            <h6>Required - (CampaignID get from campaign managment module)</h6>
+                        </div>
+                    </div>
+
+                    <div class="wrapper-spinner-form-new">
+                        <div class="col-md-12">
+                            <h6>ProductID</h6>
+                        </div>
+                        <div class="col-md-12">
+                            <h6>Required - (ProductID is user purchess products id)</h6>
+                        </div>
+                    </div>
+
+                    <div class="wrapper-spinner-form-new">
+                        <div class="col-md-12">
+                            <h6>PurchaseValue</h6>
+                        </div>
+                        <div class="col-md-12">
+                            <h6>Required - (PurchaseValue is user purchess amount)</h6>
+                        </div>
+                    </div>
+
+                    <div class="wrapper-spinner-form-new">
+                        <div class="col-md-12">
+                            <h6>email</h6>
+                        </div>
+                        <div class="col-md-12">
+                            <h6>Required - (Customer email id)</h6>
+                        </div>
+                    </div>
+
+                    <div class="wrapper-spinner-form-new">
+                        <div class="col-md-12">
+                            <h6>phone</h6>
+                        </div>
+                        <div class="col-md-12">
+                            <h6>Required - (Customer whatsapp phone number)</h6>
+                        </div>
+                    </div>
+
+                    <div class="wrapper-spinner-form-new">
+                        <div class="col-md-12">
+                            <h6>OrderID</h6>
+                        </div>
+                        <div class="col-md-12">
+                            <h6>Required - (Customer purchess Order or Invoice id)</h6>
+                        </div>
+                    </div>
+
+                    <div class="wrapper-spinner-form-new">
+                        <div class="col-md-12">
+                            <h6>is_login</h6>
+                        </div>
+                        <div class="col-md-12">
+                            <h6>Required - (true)</h6>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
 
         <?php echo form_open($this->uri->uri_string(), ['id' => 'article-form']); ?>
         <div class="row">
@@ -101,8 +199,11 @@
                         <span class="tw-text-lg"><?php echo $title; ?></span>
                     </h4>
 
-                    <button type="button" class="btn btn-primary campaingn-modal" data-toggle="modal" data-target="#exampleModal">
+                    <button type="button" class="btn btn-primary campaingn-modal" style="margin-right: -400px;" data-toggle="modal" data-target="#exampleModal">
                         API Setting
+                    </button>
+                    <button type="button" class="btn btn-primary campaingn-modal campaingn-modal-required" data-toggle="modal" data-target="#exampleModalRequired">
+                        Required Keys
                     </button>
                 </div>
 
@@ -120,12 +221,13 @@
                                 </select>
                             </div>
 
-                            <div class="form-group col-md-10" app-field-wrapper="campaign">
+                            <!-- <div class="form-group col-md-10" app-field-wrapper="campaign">
                                 <label for="Campaign" class="control-label">Campaign Name</label><span style="color:red">*</span>
                                 <input type="text" id="_name" name="campaign_name" require class="form-control">
-                            </div> 
+                            </div>  -->
 
                             <div class="form-group col-md-10">
+
                                 <div class="title">
                                     <button type="button" class="btn btn-success" id="add-input">+ Add Input</button>
                                 </div>
@@ -165,9 +267,7 @@
                     </div>
 
                 <div class="panel-footer text-right">
-                        <button type="submit" class="btn btn-primary">
-                            <?php echo _l('submit'); ?>
-                        </button>
+                        <button type="submit" class="btn btn-primary"> Send</button>
                 </div>
                 </div>
                     

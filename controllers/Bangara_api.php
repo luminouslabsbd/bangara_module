@@ -390,7 +390,7 @@ class Bangara_api extends AdminController
     public function create_campaign($id=''){
 
         $this->load->helper('url');
-        $data['title'] = "Campaign Create";
+        $data['title'] = "User QR Code Manage";
 
         if($this->input->post()){
 
@@ -409,7 +409,7 @@ class Bangara_api extends AdminController
              
             if(isset($formData['fields_name']) && $formData['fields_value'] ){
                 
-                $requiredKeys = ['TenantID', 'CampaignID', 'ProductID', 'PurchaseValue', 'email','is_login','OrderID'];
+                $requiredKeys = ['TenantID', 'CampaignID', 'ProductID', 'PurchaseValue', 'email','is_login','OrderID','phone'];
                 $isValidation =   $this->formValidation($formData['fields_name'],$requiredKeys);
                 $rightFormatData = $this->rightFormatData($formData);
 
