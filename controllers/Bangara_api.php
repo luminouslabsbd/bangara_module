@@ -9,6 +9,7 @@ class Bangara_api extends AdminController
         parent::__construct();
         $this->load->library('app_modules');
         $this->load->model('Bangara_model');
+        $this->config =& load_class('Config', 'core');
     }
 
     public function create($id = '')
@@ -212,7 +213,7 @@ class Bangara_api extends AdminController
             }
             
 
-            $url = base_url('admin/bangara_module/bangara/create_invoice');
+            $url = base_url('index.php/admin/bangara_module/bangara/create_invoice');
             
             // $dataArray = array(
             //     'email' => $formData['email'],
@@ -280,8 +281,9 @@ class Bangara_api extends AdminController
         $this->load->library('form_validation');
         // Define an array of required keys
         // $missingKeys = array_diff($requiredKeys, array_keys($data));
-        $missingKeys = array_diff($requiredKeys, $data);
-
+        $dataKeys = array_keys($data);
+        $missingKeys = array_diff($requiredKeys, $dataKeys);
+ 
         if (!empty($missingKeys)) {
             // Some required keys are missing
             $message = array(
@@ -293,47 +295,82 @@ class Bangara_api extends AdminController
             return json_encode($message);
             exit();
         }
+        
         return true;
     }
     
     public function rightFormatData($formData){
 
-        // Iterate over both arrays simultaneously
-        for ($i = 0; $i < count($formData['fields_name']); $i++) {
-            $key = $formData['fields_name'][$i];
-            $value = $formData['fields_value'][$i];
-            // Perform validation based on the key
+        $dataKeys = array_keys($formData);
+        $value = array_values($formData);
 
+        foreach ($dataKeys as $index => $key) {
+           
             switch ($key) {
-                case 'email':
-                    // Validate email format
-                    if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                        $message = "Invalid email format for key $key";
-                        return $message;
-                    }
-                    break;
+                // case 'email':
+                //     // Validate email format
+                //     if ( !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                //         $message = "Invalid email format for key $key";
+                //         header('Content-Type: application/json');
+                //         return json_encode(array('status' => FALSE, 'error' => $message, 'message' => $message));
+                //         exit();
+                //     }
+                //     break;
                 case 'PurchaseValue':
                 case 'CampaignID':
                 case 'ProductID':
-                case 'TenantID':
                 case 'OrderID':
                     if (!is_numeric($value)) {
                         $message = "Invalid value for key $key, must be numerical";
-                        return $message;
-                    }
-                    break;
-                case 'is_login':
-                    if (!in_array($value, ['true', 'false'], true)) {
-                        $message = "Invalid value for key $key, must be 'true' or 'false'";
-                        return $message;
+                        header('Content-Type: application/json');
+                        return json_encode(array('status' => FALSE, 'error' => $message, 'message' => $message));
+                        exit();
                     }
                     break;
                 default:
                     $final_array = array();
                     return $final_array[$key] = $value;
                     break;
-            }
+                }
         }
+
+        // Old Code 
+        // Iterate over both arrays simultaneously
+        // for ($i = 0; $i < count($formData['fields_name']); $i++) {
+        //     $key = $formData['fields_name'][$i];
+        //     $value = $formData['fields_value'][$i];
+            // Perform validation based on the key
+            // switch ($key) {
+            //     case 'email':
+            //         // Validate email format
+            //         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            //             $message = "Invalid email format for key $key";
+            //             return $message;
+            //         }
+            //         break;
+            //     case 'PurchaseValue':
+            //     case 'CampaignID':
+            //     case 'ProductID':
+            //     case 'TenantID':
+            //     case 'OrderID':
+            //         if (!is_numeric($value)) {
+            //             $message = "Invalid value for key $key, must be numerical";
+            //             return $message;
+            //         }
+            //         break;
+            //     case 'is_login':
+            //         if (!in_array($value, ['true', 'false'], true)) {
+            //             $message = "Invalid value for key $key, must be 'true' or 'false'";
+            //             return $message;
+            //         }
+            //         break;
+            //     default:
+            //         $final_array = array();
+            //         return $final_array[$key] = $value;
+            //         break;
+            // }
+        // }
+
         return $final_array = $value;
     }
 
@@ -387,7 +424,7 @@ class Bangara_api extends AdminController
         return true;
     }
 
-    public function create_campaign($id=''){
+    public function create_campaignOld($id=''){
 
         $this->load->helper('url');
         $data['title'] = "User QR Code Manage";
@@ -405,7 +442,6 @@ class Bangara_api extends AdminController
             }else{
                 $url = null ;
             }
-            
              
             if(isset($formData['fields_name']) && $formData['fields_value'] ){
                 
@@ -414,7 +450,7 @@ class Bangara_api extends AdminController
                 $rightFormatData = $this->rightFormatData($formData);
 
                 if($isValidation && $rightFormatData){
-
+                  
                     $final_array = array();
                     for ($i = 0; $i < count($formData['fields_name']); $i++) {
                         $final_array[$formData['fields_name'][$i]] = $formData['fields_value'][$i];
@@ -466,6 +502,161 @@ class Bangara_api extends AdminController
         
     }
 
+    public function getLoyalityCampaignList(){
+
+        $url = $this->config->item('loyality_url');
+        $userId = get_staff_user_id();
+        $email = $this->Bangara_model->getStaffEmail($userId);
+        // $email = "exampleparner@loyalty.keoscx.com"; 
+        // Build the JSON string
+        $postFields = json_encode(array(
+            "email" => $email
+        ));
+
+        // Initialize cURL session
+        $curl = curl_init();
+
+        // Set cURL options
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url.'v1/ll/crm/partner-campaign',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_SSL_VERIFYPEER => false, // Disable SSL certificate verification
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_POSTFIELDS => $postFields, // Set the dynamic JSON string here
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        $response = json_decode($response, true);
+        return $response ;
+        
+    }
+
+    public function getLoyalityAllPartnerList(){
+
+        $url = $this->config->item('loyality_url');
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => $url.'v1/ll/crm/get-partner',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        $response = json_decode($response, true);
+        return $response ;
+        
+    }
+
+    public function create_campaign($id=''){
+
+        $data['all_partner'] = $this->getLoyalityAllPartnerList();
+        $data['url'] = $this->config->item('loyality_url'); 
+
+        if(is_staff_logged_in()){
+            $data['loyality_api_data'] = $this->getLoyalityCampaignList() ?? null;
+        }else{
+            $data['all_partner'] = $this->getLoyalityAllPartnerList() ?? null;
+        }
+        
+        $this->load->helper('url');
+        $data['title'] = "User QR Code Manage";
+        
+
+        if (isset($_SESSION['expire_time']) && time() > $_SESSION['expire_time']) {
+            // Unset all session variables
+           unset($_SESSION['old_form_data']);
+        }
+
+        if($this->input->post()){
+
+            $formData = $this->input->post();
+
+            $this->load->database();
+            $query = $this->db->get(db_prefix().'campaign_api_settings');
+            $campaign_api_settings = $query->row();
+
+            if($campaign_api_settings != null){
+                $url = $campaign_api_settings->url ;
+            }else{
+                $url = null ;
+            }
+            
+            if( isset($formData['CampaignID']) && isset($formData['ProductID']) && isset($formData['PurchaseValue']) && isset($formData['OrderID']) && isset($formData['phone']) ){
+                
+                $requiredKeys = ['CampaignID', 'ProductID', 'PurchaseValue','OrderID','phone'];
+                $isValidation =   $this->formValidation($formData ,$requiredKeys );
+
+                $rightFormatData = $this->rightFormatData($formData);
+
+                if($isValidation && $rightFormatData){
+                    
+                    $jsonString = json_encode($formData, JSON_PRETTY_PRINT);
+                    $_SESSION['old_form_data'] = $jsonString;
+                    $_SESSION['expire_time'] = time() + (3 * 60);
+
+                    $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => $url,
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 0,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => "GET",
+                        CURLOPT_POSTFIELDS => $jsonString ,
+                        CURLOPT_HTTPHEADER => array(
+                            'Content-Type: application/json', // Specify content type as JSON
+                        ),
+                    ));
+
+                    $response = curl_exec($curl);
+
+                    $data['title'] = "API Request Result";
+                    $data['response'] = $response;
+                    $response = json_decode($response,true);
+                    
+                    $this->session->set_userdata('api_request_result', $response);
+                }elseif(!is_array($rightFormatData)){
+                    $data['title'] = "API Request Result";
+                    $data['response'] = $rightFormatData;
+                    $this->session->set_userdata('api_request_result', $rightFormatData);
+                }elseif($url == null){
+                    $data['title'] = "API Request Result";
+                    $data['response'] = "Please add the api end point";
+                    $this->session->set_userdata('api_request_result', $data);
+                }else{
+                    $data['title'] = "API Request Result";
+                    $data['response'] = $isValidation;
+                    $this->session->set_userdata('api_request_result', $isValidation);
+                }
+                redirect('bangara_module/bangara_api/campaign_api_request_result');
+            }
+        }else{
+            // $data['api_data'] = $this->getApiData();
+            $this->load->view('campaign_create', $data);
+        }
+        
+    }
+
     public function campaign_api_request_result(){
 
         $response = $this->session->userdata('api_request_result');
@@ -482,88 +673,11 @@ class Bangara_api extends AdminController
 
     }
 
-    public function create_loyality_customer(){
+    public function reset_data(){
 
-        if($this->input->method() != "post"){
-            $message = array(
-                'code'  => 400,
-                'status' => FALSE,
-                'message' => 'Method Error'
-            );
-             // Send JSON response
-            header('Content-Type: application/json');
-            echo json_encode($message);
-            exit();
-        }
-        
-        $rawData = file_get_contents("php://input");
-        $data = json_decode($rawData, true);
+        unset($_SESSION['old_form_data']);
+        redirect('bangara_module/bangara_api/create_campaign');
 
-        $requiredKeys = ['email','phonenumber', 'company'];
-        $isValidation =   $this->formValidation($data,$requiredKeys);
-
-        if(!$isValidation){
-
-            $message = array(
-                'code'  => 202,
-                'status' => FALSE,
-                'message' => 'Validation Error'
-            );
-             // Send JSON response
-            header('Content-Type: application/json');
-            echo json_encode($message);
-            exit();
-            
-        }
-
-        $isExists = $this->Bangara_model->isClintCheck($data['email']);
-        
-        if(!$isExists ){
-
-            $finalArray = [
-                'company' => $data['company'],
-                'phonenumber' =>$data['phonenumber'],
-            ];
-
-            $email_parts = explode('@',$data['email']);
-
-            // Access the first part of the email address
-            $email_username = $email_parts[0] ?? "Null";
-            $data['firstname'] = $email_username;
-            $data['lastname'] = $email_username;
-
-            $id = $this->clients_model->add($finalArray);
-
-            if( $id){
-
-                $assign['customer_admins']   = [];
-                $assign['customer_admins'][] = get_staff_user_id() ?? 0 ;
-                $this->clients_model->assign_admins($assign, $id);
-                $this->form_contact_data($data ,$id, $contact_id = '');
-            }
-
-            $message = array(
-                'code'  => 200,
-                'status' => true,
-                'crm_customer_id' => $id
-            );
-             // Send JSON response
-            header('Content-Type: application/json');
-            echo json_encode($message);
-            exit();
-    
-        }else{
-
-            $message = array(
-                'code'  => 200,
-                'status' => true,
-                'crm_customer_id' => (int) $isExists
-            );
-             // Send JSON response
-            header('Content-Type: application/json');
-            echo json_encode($message);
-            exit();
-        }
     }
 
 

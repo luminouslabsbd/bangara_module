@@ -29,6 +29,7 @@ class Bangara_model extends App_Model
         $this->db->where('name', $projectname);
         $query = $this->db->get(db_prefix().'projects');
         $project = $query->row();
+
         if($project !== null){
             $getCustomFieldValue = get_custom_field_value($project->id, 'projects_mail_platform_list_id', 'projects', $format = true);
             return $getCustomFieldValue;
@@ -111,7 +112,7 @@ class Bangara_model extends App_Model
             'LNAME' => $data['lastname'],
             'NUMBER' => $data['phonenumber'],
             'COMPANY' => $data['company'],
-            'DEBT' => (int) $data['debt_amount'],
+            'DEBT' => $data['debt_amount'],
         ];
 
         $api = bangara_api_data_get();
@@ -141,7 +142,7 @@ class Bangara_model extends App_Model
         $response = curl_exec($curl);
         curl_close($curl);
         $responseData = json_decode($response, true);
-      
+
         if($responseData && $responseData['status'] == 'success'){
             return true ;
         }
@@ -203,6 +204,26 @@ class Bangara_model extends App_Model
         }
     }
 
+    public function send_call_to_voicebot($name,$company_name,$amount,$number){
+
+        $url = "https://voicebot.keoscx.com/make-call?name=" . urlencode($name) . "&company_name=" . urlencode($company_name) . "&amount=" . $amount . "&number=" . $number ;
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+        ));
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+    }
+
     // public function Genarate Invoice ID
     public function newInvoiceIdCreate(){
         
@@ -216,6 +237,19 @@ class Bangara_model extends App_Model
             return $invoice_id+1;
         }
         
+    }
+
+    public function getStaffEmail($id){
+        
+        $this->load->database();
+        $this->db->where('staffid', $id);
+        $query = $this->db->get(db_prefix().'staff');
+        $staff = $query->row();
+        if($staff != null){
+            return $staff->email ;
+        }else{
+            return false ;
+        }
     }
 
     

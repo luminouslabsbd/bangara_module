@@ -11,6 +11,9 @@
     .spinner-form-wrapper{
         width: 100%;
     }
+    .spinner-form-wrapper-new{
+        width: 40%;
+    }
 
     .wrapper-spinner-form{
         display: flex;
@@ -23,7 +26,7 @@
     }
 
     .spinner-fomr-col{
-        width: 40%;
+        width: 100%;
     }
 
     .panel-footer.text-right{
@@ -55,6 +58,13 @@
         margin-bottom: 20px;
     }
 
+    .btn.btn-default.campaingn-modal {
+        margin-bottom: 20px;
+    }
+
+    .btn.btn-success.campaingn-modal {
+        margin-bottom: 20px;
+    }
 
 </style>
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
@@ -62,6 +72,7 @@
 <div id="wrapper">
     <div class="content">
 
+   
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -96,6 +107,7 @@
         </div>
     </div>
 </div>
+
 
 <div class="modal fade" id="exampleModalRequired" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -148,7 +160,7 @@
                             <h6>email</h6>
                         </div>
                         <div class="col-md-12">
-                            <h6>Required - (Customer email id)</h6>
+                            <h6>Its Not Required - (Customer email id)</h6>
                         </div>
                     </div>
 
@@ -170,14 +182,14 @@
                         </div>
                     </div>
 
-                    <div class="wrapper-spinner-form-new">
+                    <!-- <div class="wrapper-spinner-form-new">
                         <div class="col-md-12">
                             <h6>is_login</h6>
                         </div>
                         <div class="col-md-12">
                             <h6>Required - (true)</h6>
                         </div>
-                    </div>
+                    </div> -->
 
                 </div>
                 
@@ -194,67 +206,135 @@
         <?php echo form_open($this->uri->uri_string(), ['id' => 'article-form']); ?>
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <div class="tw-flex tw-justify-between tw-mb-2">
+                <div class="tw-flex tw-justify-between tw-mb-2 align-items-center">
                     <h4 class="tw-mt-0 tw-font-semibold tw-text-neutral-700">
                         <span class="tw-text-lg"><?php echo $title; ?></span>
                     </h4>
 
-                    <button type="button" class="btn btn-primary campaingn-modal" style="margin-right: -400px;" data-toggle="modal" data-target="#exampleModal">
-                        API Setting
-                    </button>
-                    <button type="button" class="btn btn-primary campaingn-modal campaingn-modal-required" data-toggle="modal" data-target="#exampleModalRequired">
-                        Required Keys
-                    </button>
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-default  campaingn-modal" style="" 
+                                onclick="window.location='<?php echo admin_url('bangara_module/bangara_api/reset_data'); ?>'">
+                            Reset Data
+                        </button>
+
+                        <button type="button" class="btn btn-success campaingn-modal" data-toggle="modal" data-target="#exampleModal">
+                            API Setting
+                        </button>
+
+                        <button type="button" class="btn btn-primary campaingn-modal campaingn-modal-required" data-toggle="modal" data-target="#exampleModalRequired">
+                            Required Keys
+                        </button>
+                    </div>
                 </div>
 
+                <?php
+                    $old_form_data =  $_SESSION['old_form_data'] ?? null;
+                    $old_form_data =  json_decode( $old_form_data ,true);
+                ?>
                 
-
                 <div class="panel_s">
                     <div class="panel-body">
                         
                         <div class="row">
-                            <div class="form-group col-md-12" app-field-wrapper="campaign_type">
+
+                            <div class="form-group col-md-10" app-field-wrapper="campaign_type">
                                 <label for="email" class="control-label">Campaign Type</label><span style="color:red">*</span>
                                 <select id="campaign_type" name="campaign_type" require class="form-control">
-                                    <option value="">Select Campaign Type</option>
                                     <option value="VoiceBot">Tap To Win</option>
                                 </select>
                             </div>
 
-                            <!-- <div class="form-group col-md-10" app-field-wrapper="campaign">
-                                <label for="Campaign" class="control-label">Campaign Name</label><span style="color:red">*</span>
-                                <input type="text" id="_name" name="campaign_name" require class="form-control">
-                            </div>  -->
+                            <?php if(is_client_logged_in()) {?>
+                            <div class="form-group col-md-10" app-field-wrapper="campaign_type">
+                                <label for="email" class="control-label">Campaign Name</label><span style="color:red">*</span>
+                                <select id="CampaignID" name="CampaignID" require class="form-control">
+                                    <?php if($loyality_api_data != null && isset($loyality_api_data['data'])) {
+                                        
+                                        foreach($loyality_api_data['data']['campagins'] as $campaign) {
+                                            $selected = isset($old_form_data['CampaignID']) && $old_form_data['CampaignID'] == $campaign['id'] ? 'selected' : '';
+                                        ?>
+                                        <option value="<?php echo $campaign['id'] ?>" <?php echo $selected ?>><?php echo $campaign['name'] . '  -  ' . $campaign['card_id'] ?></option>
+                                        <?php }
+                                    }?>
+                                </select>
+                                <input type="hidden" name="TenantID" id="TenantID" value="<?php  if( $loyality_api_data != null && isset($loyality_api_data['data']) )  echo $loyality_api_data['data']['partnerId'] ?>">
+                            </div>
+                            <?php }?>
 
+                            <?php if(is_staff_logged_in()) {?>
+
+                            <div class="form-group col-md-10" app-field-wrapper="campaign_type">
+                                <label for="email" class="control-label">Partner Name</label><span style="color:red">*</span>
+                                <select id="partnerID" name="partnerID" require class="form-control">
+                                    <?php if($all_partner != null && isset($all_partner['data'])) {
+                                        foreach($all_partner['data'] as $partner) {
+                                            $selected = isset($old_form_data['partnerID']) && $old_form_data['partnerID'] == $partner['id'] ? 'selected' : '';
+                                        ?>
+                                        <option value="<?php echo $partner['id'] ?>" <?php echo $selected ?>><?php echo $partner['name'] . ' - '. $partner['id'] ?></option>
+                                        <?php }
+                                    }?>
+                                </select>
+                            </div>
+
+                            <div class="form-group col-md-10" app-field-wrapper="campaign_type">
+                                <label for="email" class="control-label">Campaign Name</label><span style="color:red">*</span>
+                                <select id="CampaignID" name="CampaignID" required class="form-control">
+                                    <!-- Campaign options will be populated dynamically by JavaScript -->
+                                </select>
+                                <input type="hidden" name="TenantID" id="TenantID" value="">
+                            </div>
+
+                            
+                            <?php }?>
+
+                            
                             <div class="form-group col-md-10">
 
-                                <div class="title">
-                                    <button type="button" class="btn btn-success" id="add-input">+ Add Input</button>
-                                </div>
-
                                 <div class="spinner-form-wrapper">
+
                                     <div class="wrapper-spinner-form">
                                         <div class="spinner-fomr-col">
-                                            <h5>Fields Name</h5>
-                                            <input type="text" name="fields_name[]" class="dynamic-input form-control" />
-                                        </div>
-                                        <div class="spinner-fomr-col">
-                                            <h5>Fields Value</h5>
-                                            <input type="text" name="fields_value[]" class="dynamic-input form-control" />
+                                            <h5>Phone Number <span>*</span></h5>
+                                            <input type="text" id="phone" value="<?php echo isset($old_form_data['phone']) ? $old_form_data['phone'] : ''; ?>" require name="phone"  placeholder="Enter Customer Phone Number With Country Code" class="dynamic-input form-control" />
                                         </div>
                                     </div>
-                                    <div class="spinner-form" id="input-container"></div>
-                                    
-                                </div>
 
+                                    <div class="wrapper-spinner-form">
+                                        <div class="spinner-fomr-col">
+                                            <h5>Product ID <span>*</span></h5>
+                                            <input type="text" id="ProductID" value="<?php echo isset($old_form_data['ProductID']) ? $old_form_data['ProductID'] : ''; ?>" require name="ProductID" placeholder="Enter Product ID" class="dynamic-input form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="wrapper-spinner-form">
+                                        <div class="spinner-fomr-col">
+                                            <h5>Purchase Value<span>*</span></h5>
+                                            <input type="number" id="PurchaseValue" value="<?php echo isset($old_form_data['PurchaseValue']) ? $old_form_data['PurchaseValue'] : ''; ?>" require name="PurchaseValue" placeholder="Enter Customer Purchase Value" class="dynamic-input form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="wrapper-spinner-form">
+                                        <div class="spinner-fomr-col">
+                                            <h5>Order ID<span>*</span></h5>
+                                            <input type="text" id="OrderID" value="<?php echo isset($old_form_data['OrderID']) ? $old_form_data['OrderID'] : ''; ?>" require name="OrderID" placeholder="Enter Customer Order ID or Invoice ID" class="dynamic-input form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="wrapper-spinner-form">
+                                        <div class="spinner-fomr-col">
+                                            <h5>Email</h5>
+                                            <input type="email" value="<?php echo isset($old_form_data['email']) ? $old_form_data['email'] : ''; ?>" name="email" placeholder="Enter Customer Email" class="dynamic-input form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="spinner-form" id="input-container"></div>
+                                </div>
+                                
                                 <div class="spinner-form" id="input-container"></div>
                                 
                             </div>
 
                             </div>
-
-                            <input type="hidden" id="from_system" name="from_system" value="from_system" class="form-control">
-
 
                         </div>
 
@@ -267,7 +347,7 @@
                     </div>
 
                 <div class="panel-footer text-right">
-                        <button type="submit" class="btn btn-primary"> Send</button>
+                        <button type="submit" id="submitBtn" class="btn btn-primary"> Send</button>
                 </div>
                 </div>
                     
@@ -301,7 +381,7 @@
 $(document).ready(function () {
         // Add Input
         $("#add-input").on("click", function () {
-            var newInput = `<div class="spinner-form-wrapper">
+            var newInput = `<div class="spinner-form-wrapper-new">
                         <div class="spinner-form">
                             <div class="spinner-fomr-col">
                                 <h5>Fields Name</h5>
@@ -343,6 +423,71 @@ $(document).ready(function () {
             });
         });
     });
+
+   
+    // Function to check if all required inputs are filled
+    function checkInputs() {
+        const inputs = document.querySelectorAll('#CampaignID, #phone, #ProductID, #PurchaseValue, #OrderID');
+        for (let input of inputs) {
+            if (input.value.trim() === '') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Function to update the button state
+    function updateButtonState() {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = !checkInputs();
+    }
+
+    // Add event listeners to input fields
+    const inputFields = document.querySelectorAll('#CampaignID, #phone, #ProductID, #PurchaseValue, #OrderID');
+    inputFields.forEach(input => {
+        input.addEventListener('input', updateButtonState);
+    });
+
+    // Initially disable the button
+    document.addEventListener('DOMContentLoaded', updateButtonState);
+
+
+    // API CALL 
+    document.addEventListener('DOMContentLoaded', function() {
+        const partnerSelect = document.getElementById('partnerID');
+        const campaignSelect = document.getElementById('CampaignID');
+
+        partnerSelect.addEventListener('change', function() {
+            const partnerID = this.value;
+            let endpoint = "<?php echo $url ?>";
+            // Make an API request
+            fetch(endpoint + 'v1/ll/crm/get-partner/' + partnerID)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Log the response data for debugging
+                    
+                    // Clear existing options
+                    campaignSelect.innerHTML = '';
+
+                    const tenantIDInput = document.getElementById('TenantID');
+                    tenantIDInput.value = data.data.partner.id;
+
+                    // Populate campaign options
+                    data.data.campagins.forEach(campaign => {
+                        const option = document.createElement('option');
+                        option.value = campaign.id;
+                        option.textContent = campaign.name + ' - ' + campaign.card_id; // Customize as per your requirement
+                        campaignSelect.appendChild(option);
+                    });
+                })
+                
+                .catch(error => {
+                    console.error('Error fetching campaign data:', error);
+                });
+        });
+    });
+
+
 
 </script>
 </body>
