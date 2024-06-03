@@ -18,6 +18,11 @@
     .wrapper-spinner-form{
         display: flex;
         gap: 32px;
+        align-items: center;
+    }
+
+    .spinner-fomr-col-2{
+        margin-top: 30px;
     }
 
     .wrapper-spinner-form-new{
@@ -36,7 +41,7 @@
     }
 
     button.remove-input.btn.btn-danger{
-        padding: 20px 25px;
+        padding: 17px 18px;
         margin: 0;
         display: flex;
         justify-content: center;
@@ -64,6 +69,10 @@
 
     .btn.btn-success.campaingn-modal {
         margin-bottom: 20px;
+    }
+
+    .spinner-fomr-col-5{
+        width: 100%;
     }
 
 </style>
@@ -294,28 +303,47 @@
 
                                     <div class="wrapper-spinner-form">
                                         <div class="spinner-fomr-col">
-                                            <h5>Phone Number <span>*</span></h5>
+                                            <h5>Phone Number <span style="color:red">*</span></h5>
                                             <input type="text" id="phone" value="<?php echo isset($old_form_data['phone']) ? $old_form_data['phone'] : ''; ?>" require name="phone"  placeholder="Enter Customer Phone Number With Country Code" class="dynamic-input form-control" />
                                         </div>
                                     </div>
 
-                                    <div class="wrapper-spinner-form">
+                                    <!-- <div class="wrapper-spinner-form">
                                         <div class="spinner-fomr-col">
                                             <h5>Product ID <span>*</span></h5>
                                             <input type="text" id="ProductID" value="<?php echo isset($old_form_data['ProductID']) ? $old_form_data['ProductID'] : ''; ?>" require name="ProductID" placeholder="Enter Product ID" class="dynamic-input form-control" />
+                                        </div>
+                                    </div> -->
+
+                                    
+                                    <div id="spinner-form-container">
+                                        <div class="wrapper-spinner-form">
+                                            <div class="spinner-fomr-col-5">
+                                                <h5>Product ID <span style="color:red">*</span></h5>
+                                                <input type="text" id="ProductID" value="" require name="ProductID[]" placeholder="Enter Product ID" class="dynamic-input form-control" />
+                                            </div>
+                                            <div class="spinner-fomr-col-5">
+                                                <h5>SKU <span style="color:red">*</span></h5>
+                                                <input type="text" id="sku" value="" require name="sku[]" placeholder="Enter SKU ID" class="dynamic-input form-control" />
+                                            </div>
+                                            <div class="spinner-fomr-col-2">
+                                                <button type="button" id="addMore" class="btn btn-primary">Add More</button>
+                                            </div>
+
+                                            <!-- <button type="button" class="removeButton">Remove</button> -->
                                         </div>
                                     </div>
 
                                     <div class="wrapper-spinner-form">
                                         <div class="spinner-fomr-col">
-                                            <h5>Purchase Value<span>*</span></h5>
+                                            <h5>Purchase Value<span style="color:red">*</span></h5>
                                             <input type="number" id="PurchaseValue" value="<?php echo isset($old_form_data['PurchaseValue']) ? $old_form_data['PurchaseValue'] : ''; ?>" require name="PurchaseValue" placeholder="Enter Customer Purchase Value" class="dynamic-input form-control" />
                                         </div>
                                     </div>
 
                                     <div class="wrapper-spinner-form">
                                         <div class="spinner-fomr-col">
-                                            <h5>Order ID<span>*</span></h5>
+                                            <h5>Order ID<span style="color:red">*</span></h5>
                                             <input type="text" id="OrderID" value="<?php echo isset($old_form_data['OrderID']) ? $old_form_data['OrderID'] : ''; ?>" require name="OrderID" placeholder="Enter Customer Order ID or Invoice ID" class="dynamic-input form-control" />
                                         </div>
                                     </div>
@@ -464,15 +492,18 @@ $(document).ready(function () {
             fetch(endpoint + 'v1/ll/crm/get-partner/' + partnerID)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data); // Log the response data for debugging
+                    // console.log(data); // Log the response data for debugging
                     
                     // Clear existing options
                     campaignSelect.innerHTML = '';
 
+                    const phone = document.getElementById('phone');
+                    phone.value = data.data.partner.phone;
+
                     const tenantIDInput = document.getElementById('TenantID');
                     tenantIDInput.value = data.data.partner.id;
 
-                    // Populate campaign options
+                    // Populate campaign options 
                     data.data.campagins.forEach(campaign => {
                         const option = document.createElement('option');
                         option.value = campaign.id;
@@ -486,7 +517,41 @@ $(document).ready(function () {
                 });
         });
     });
+    
+    // New Code for Form Append And remove 
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to create a new set of input fields
+        function createInputFields() {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'wrapper-spinner-form';
+            wrapper.innerHTML = `
+                <div class="spinner-fomr-col-5">
+                    <h5>Product ID <span style="color:red">*</span></h5>
+                    <input type="text" name="ProductID[]" placeholder="Enter Product ID" class="dynamic-input form-control" />
+                </div>
+                <div class="spinner-fomr-col-5">
+                    <h5>SKU <span style="color:red">*</span></h5>
+                    <input type="text" name="sku[]" placeholder="Enter SKU ID" class="dynamic-input form-control" />
+                </div>
 
+                <button type="button" class="remove-input removeButton btn btn-danger">Remove</button>
+            `;
+            return wrapper;
+        }
+
+        // Add event listener for the Add More button
+        document.getElementById('addMore').addEventListener('click', function () {
+            var container = document.getElementById('spinner-form-container');
+            container.appendChild(createInputFields());
+        });
+
+        // Event delegation for dynamically added Remove buttons
+        document.addEventListener('click', function (event) {
+            if (event.target && event.target.classList.contains('removeButton')) {
+                event.target.closest('.wrapper-spinner-form').remove();
+            }
+        });
+    });
 
 
 </script>

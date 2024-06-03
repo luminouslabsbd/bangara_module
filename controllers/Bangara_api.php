@@ -598,17 +598,37 @@ class Bangara_api extends AdminController
             }else{
                 $url = null ;
             }
-            
+           
             if( isset($formData['CampaignID']) && isset($formData['ProductID']) && isset($formData['PurchaseValue']) && isset($formData['OrderID']) && isset($formData['phone']) ){
                 
-                $requiredKeys = ['CampaignID', 'ProductID', 'PurchaseValue','OrderID','phone'];
+                $requiredKeys = ['CampaignID','PurchaseValue','OrderID','phone'];
                 $isValidation =   $this->formValidation($formData ,$requiredKeys );
 
                 $rightFormatData = $this->rightFormatData($formData);
 
                 if($isValidation && $rightFormatData){
-                    
-                    $jsonString = json_encode($formData, JSON_PRETTY_PRINT);
+
+                    $newData = array(
+                        "OrderID" => $formData["OrderID"],
+                        "TenantID" => $formData["TenantID"],
+                        "CampaignID" => $formData["CampaignID"],
+                        "PurchaseValue" => $formData["PurchaseValue"],
+                        "email" => isset($formData["email"]) ? $formData["email"] : null,
+                        "phone" => $formData["phone"],
+                        "products" => array()
+                    );
+
+                    $count = count($formData["ProductID"]);
+                    for ($i = 0; $i < $count; $i++) {
+                        $product = array(
+                            "productId" => $formData["ProductID"][$i],
+                            "sku" => $formData["sku"][$i]
+                        );
+                        $newData["products"][] = $product;
+                    }
+
+                    $jsonString = json_encode($newData, JSON_PRETTY_PRINT);
+
                     $_SESSION['old_form_data'] = $jsonString;
                     $_SESSION['expire_time'] = time() + (3 * 60);
 
@@ -621,7 +641,7 @@ class Bangara_api extends AdminController
                         CURLOPT_TIMEOUT => 0,
                         CURLOPT_FOLLOWLOCATION => true,
                         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                        CURLOPT_CUSTOMREQUEST => "GET",
+                        CURLOPT_CUSTOMREQUEST => "POST",
                         CURLOPT_POSTFIELDS => $jsonString ,
                         CURLOPT_HTTPHEADER => array(
                             'Content-Type: application/json', // Specify content type as JSON

@@ -49,17 +49,20 @@ class Bangara extends ClientsController {
         $data = json_decode($rawData, true);
         // Send For Data Format Validation 
         $requiredKeys = ['email', 'firstname', 'lastname', 'phonenumber', 'debt_amount','campaign', 'company'];
+        // $requiredKeys = ['email', 'firstname', 'lastname', 'phonenumber', 'debt_amount', 'invoice_number', 'campaign', 'company'];
         $isValidation =   $this->formValidation($data,$requiredKeys);
 
         if($isValidation){
+
             // This Invoice Number To To Check
             // $isInvoice = $this->Bangara_model->isInvoiceCheck($data['invoice_number']);
             $invoiceNumber = $this->Bangara_model->newInvoiceIdCreate();
+
             // Get Project list_uid From Mail Platform
             $projectId = $this->Bangara_model->getProjectData($data['campaign']);
 
-
             // if($isInvoice == 'exists'){
+                
             //     $message = array(
             //         'code'  => 200,
             //         'status' => TRUE,
@@ -125,6 +128,9 @@ class Bangara extends ClientsController {
                     $itemMeta = $this->itemMeta($data);
                     $this->Bangara_model->invoice_create($invoiceData,$itemMeta);
                     $this->Bangara_model->createListSubscriber($data,$projectId);
+
+                    // $this->Bangara_model->send_call_to_voicebot($data['firstname'],$data['company'],$data['debt_amount'],$data['phonenumber']);
+
                     $message = array(
                         'status' => TRUE,
                         'message' => 'Invoice add successful.',
@@ -170,7 +176,6 @@ class Bangara extends ClientsController {
             'datesend' => null,
             'clientid' => $clientid ,
             'deleted_customer_name' => null,
-            'number' => $invoiceNumber,
             'prefix' => "INV-",
             'number_format' => 1,
             'datecreated' => date('Y-m-d H:i:s'),
@@ -203,8 +208,8 @@ class Bangara extends ClientsController {
             'show_quantity_as' => 1,
             'project_id' => 0,
             'subscription_id' => 0,
+            'number' => $invoiceNumber
         );
-
         return $invoiceData ;
     }
     
@@ -457,6 +462,92 @@ class Bangara extends ClientsController {
         }
 
     }
+
+    public function create_loyality_customer(){
+
+        if($this->input->method() != "post"){
+            $message = array(
+                'code'  => 400,
+                'status' => FALSE,
+                'message' => 'Method Error'
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+        }
+        
+        $rawData = file_get_contents("php://input");
+        $data = json_decode($rawData, true);
+
+        $requiredKeys = ['email','phonenumber', 'company'];
+        $isValidation =   $this->formValidation($data,$requiredKeys);
+
+        if(!$isValidation){
+
+            $message = array(
+                'code'  => 202,
+                'status' => FALSE,
+                'message' => 'Validation Error'
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+            
+        }
+
+        $isExists = $this->Bangara_model->isClintCheck($data['email']);
+        
+        if(!$isExists ){
+
+            $finalArray = [
+                'company' => $data['company'],
+                'phonenumber' =>$data['phonenumber'],
+            ];
+
+            $email_parts = explode('@',$data['email']);
+
+            // Access the first part of the email address
+            $email_username = $email_parts[0] ?? "Null";
+            $data['firstname'] = $email_username;
+            $data['lastname'] = $email_username;
+
+            $id = $this->clients_model->add($finalArray);
+
+            if( $id){
+
+                $assign['customer_admins']   = [];
+                $assign['customer_admins'][] = get_staff_user_id() ?? 0 ;
+                $this->clients_model->assign_admins($assign, $id);
+                $this->form_contact_data($data ,$id, $contact_id = '');
+            }
+
+            $message = array(
+                'code'  => 200,
+                'status' => true,
+                'crm_customer_id' => $id
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+    
+        }else{
+
+            $message = array(
+                'code'  => 200,
+                'status' => true,
+                'crm_customer_id' => (int) $isExists
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+        }
+    }
+
+    
 
     
  

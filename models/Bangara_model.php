@@ -232,7 +232,7 @@ class Bangara_model extends App_Model
         $invoice_id = $query->row()->number;
 
         if ($invoice_id == null) {
-            return null;
+            return null;     
         } else {
             return $invoice_id+1;
         }
