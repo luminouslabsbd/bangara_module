@@ -252,5 +252,19 @@ class Bangara_model extends App_Model
         }
     }
 
+    public function domain_check($domain){
+
+        $this->load->database();
+        $this->db->where('domain', $domain);
+        $query = $this->db->get(db_prefix().'saas_companies');
+        $domain = $query->row();
+        if($domain != null){
+            return $domain->domain ;
+        }else{
+            return false ;
+        }
+
+    }
+
     
 }

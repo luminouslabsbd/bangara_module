@@ -547,6 +547,65 @@ class Bangara extends ClientsController {
         }
     }
 
+    // Check User Domain Is Exists or Not
+    public function check_domain_is_exists(){
+
+        if($this->input->method() != "get"){
+            $message = array(
+                'code'  => 400,
+                'status' => FALSE,
+                'message' => 'Method Error'
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+        }
+        
+        $rawData = file_get_contents("php://input");
+        $data = json_decode($rawData, true);
+
+        $requiredKeys = ['domain'];
+        $isValidation =   $this->formValidation($data,$requiredKeys);
+
+        if(!$isValidation){
+            $message = array(
+                'code'  => 202,
+                'status' => FALSE,
+                'message' => 'Validation Error'
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+        }
+
+        $isExists = $this->Bangara_model->domain_check($data['domain']);
+        
+        if($isExists == false ){
+            $message = array(
+                'code'  => 202,
+                'status' => false,
+                'domain' => false,
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+        }else{
+            $message = array(
+                'code'  => 200,
+                'status' => true,
+                'domain' => $data['domain']
+            );
+             // Send JSON response
+            header('Content-Type: application/json');
+            echo json_encode($message);
+            exit();
+        }
+
+    }
+
     
 
     
