@@ -550,7 +550,7 @@ class Bangara extends ClientsController {
      // Check User Domain Is Exists or Not
      public function check_domain_is_exists(){
 
-        if($this->input->method() != "get"){
+        if($this->input->method() != "post"){
             $message = array(
                 'code'  => 400,
                 'status' => FALSE,
