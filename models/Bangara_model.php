@@ -256,10 +256,39 @@ class Bangara_model extends App_Model
 
         $this->load->database();
         $this->db->where('domain', $domain);
-        $query = $this->db->get(db_prefix().'saas_companies');
+        $query = $this->db->get(db_prefix().'_saas_companies');
         $domain = $query->row();
         if($domain != null){
             return $domain->domain ;
+        }else{
+            return false ;
+        }
+
+    }
+
+    public function get_all_package(){
+
+        $this->load->database();
+        $this->db->where('status','published');
+        $this->db->select('id, name, monthly_price,lifetime_price,lifetime_price,lifetime_price');
+        $query = $this->db->get(db_prefix().'_saas_packages');
+        $packages = $query->result();
+        if($packages != null){
+            return $packages ;
+        }else{
+            return [] ;
+        }
+
+    }
+
+    public function email_check($email){
+
+        $this->load->database();
+        $this->db->where('email', $email);
+        $query = $this->db->get(db_prefix().'_saas_companies');
+        $email = $query->row();
+        if($email != null){
+            return $email->email ;
         }else{
             return false ;
         }
