@@ -548,7 +548,7 @@ class Bangara extends ClientsController {
     }
 
      // Check User Domain Is Exists or Not
-     public function check_domain_is_exists(){
+    public function check_domain_is_exists(){
 
         if($this->input->method() != "post"){
             $message = array(
@@ -582,11 +582,11 @@ class Bangara extends ClientsController {
 
         $isExists = $this->Bangara_model->domain_check($data['domain']);
         
-        if($isExists == false ){
+        if($isExists == true ){
             $message = array(
-                'code'  => 202,
-                'status' => false,
-                'domain' => false,
+                'code'  => 200,
+                'status' => true,
+                'domain' => $data['domain'],
             );
              // Send JSON response
             header('Content-Type: application/json');
@@ -594,9 +594,9 @@ class Bangara extends ClientsController {
             exit();
         }else{
             $message = array(
-                'code'  => 200,
-                'status' => true,
-                'domain' => $data['domain']
+                'code'  => 202,
+                'status' => false,
+                'domain' => false
             );
              // Send JSON response
             header('Content-Type: application/json');
@@ -624,7 +624,7 @@ class Bangara extends ClientsController {
         $rawData = file_get_contents("php://input");
         $data = json_decode($rawData, true);
 
-        $requiredKeys = ['domain'];
+        $requiredKeys = ['email'];
         $isValidation =   $this->formValidation($data,$requiredKeys);
 
         if(!$isValidation){
@@ -640,12 +640,12 @@ class Bangara extends ClientsController {
         }
 
         $isExists = $this->Bangara_model->email_check($data['email']);
-        
-        if($isExists == false ){
+ 
+        if($isExists == true ){
             $message = array(
-                'code'  => 202,
-                'status' => false,
-                'email' => false,
+                'code'  => 200,
+                'status' => true,
+                'email' => true,
             );
              // Send JSON response
             header('Content-Type: application/json');
@@ -653,9 +653,9 @@ class Bangara extends ClientsController {
             exit();
         }else{
             $message = array(
-                'code'  => 200,
-                'status' => true,
-                'email' => true
+                'code'  => 202,
+                'status' => fasle,
+                'email' => false
             );
              // Send JSON response
             header('Content-Type: application/json');
@@ -726,7 +726,7 @@ class Bangara extends ClientsController {
         $this->form_validation->set_rules('expired_date', 'expired_date', 'required');
         $this->form_validation->set_rules('mobile', 'mobile', 'required');
         $this->form_validation->set_rules('country', 'country', 'required');
-        
+
         $data['timezone'] = ConfigItems('saas_default_timezone');
         $data['language'] = ConfigItems('saas_active_language');
         $data['created_date'] = date('Y-m-d H:i:s');

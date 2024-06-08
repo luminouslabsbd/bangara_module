@@ -258,8 +258,9 @@ class Bangara_model extends App_Model
         $this->db->where('domain', $domain);
         $query = $this->db->get(db_prefix().'_saas_companies');
         $domain = $query->row();
-        if($domain != null){
-            return $domain->domain ;
+
+        if($domain == null){
+            return true ;
         }else{
             return false ;
         }
@@ -273,10 +274,10 @@ class Bangara_model extends App_Model
         $this->db->select('id, name, monthly_price,lifetime_price,lifetime_price,lifetime_price');
         $query = $this->db->get(db_prefix().'_saas_packages');
         $packages = $query->result();
-        if($packages != null){
-            return $packages ;
-        }else{
+        if($packages == null){
             return [] ;
+        }else{
+            return  $packages ;
         }
 
     }
@@ -287,8 +288,9 @@ class Bangara_model extends App_Model
         $this->db->where('email', $email);
         $query = $this->db->get(db_prefix().'_saas_companies');
         $email = $query->row();
-        if($email != null){
-            return $email->email ;
+        
+        if($email == null){
+            return true ;
         }else{
             return false ;
         }
