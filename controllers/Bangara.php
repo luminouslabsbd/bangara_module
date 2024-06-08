@@ -609,7 +609,7 @@ class Bangara extends ClientsController {
     // Check User Email Is Exists or Not
     public function check_email_is_exists(){
 
-        if($this->input->method() != "get"){
+        if($this->input->method() != "post"){
             $message = array(
                 'code'  => 400,
                 'status' => FALSE,
@@ -723,7 +723,10 @@ class Bangara extends ClientsController {
         $this->form_validation->set_rules('email', 'email', 'required|valid_email|trim|is_unique[tbl_saas_companies.email]');
         $this->form_validation->set_rules('package_id','required|trim');
         $this->form_validation->set_rules('domain', 'domain', 'required|trim');
-
+        $this->form_validation->set_rules('expired_date', 'expired_date', 'required');
+        $this->form_validation->set_rules('mobile', 'mobile', 'required');
+        $this->form_validation->set_rules('country', 'country', 'required');
+        
         $data['timezone'] = ConfigItems('saas_default_timezone');
         $data['language'] = ConfigItems('saas_active_language');
         $data['created_date'] = date('Y-m-d H:i:s');
