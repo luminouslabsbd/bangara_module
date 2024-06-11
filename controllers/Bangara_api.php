@@ -407,8 +407,8 @@ class Bangara_api extends AdminController
         $data = $query->row();
     
         $ArrayDataSet = [
-            'url' => rtrim($dataArray['url'], '/'),
-            'api_key' => $dataArray['api_key'],
+            'loyality_email' => $dataArray['loyality_email'],
+            'loyality_tenent_id' => $dataArray['loyality_tenent_id'],
         ];
     
         // If there is no existing data, insert new record
@@ -424,89 +424,11 @@ class Bangara_api extends AdminController
         return true;
     }
 
-    public function create_campaignOld($id=''){
-
-        $this->load->helper('url');
-        $data['title'] = "User QR Code Manage";
-
-        if($this->input->post()){
-
-            $formData = $this->input->post();
-            
-            $this->load->database();
-            $query = $this->db->get(db_prefix().'campaign_api_settings');
-            $campaign_api_settings = $query->row();
-
-            if($campaign_api_settings != null){
-                $url = $campaign_api_settings->url ;
-            }else{
-                $url = null ;
-            }
-             
-            if(isset($formData['fields_name']) && $formData['fields_value'] ){
-                
-                $requiredKeys = ['TenantID', 'CampaignID', 'ProductID', 'PurchaseValue', 'email','is_login','OrderID','phone'];
-                $isValidation =   $this->formValidation($formData['fields_name'],$requiredKeys);
-                $rightFormatData = $this->rightFormatData($formData);
-
-                if($isValidation && $rightFormatData){
-                  
-                    $final_array = array();
-                    for ($i = 0; $i < count($formData['fields_name']); $i++) {
-                        $final_array[$formData['fields_name'][$i]] = $formData['fields_value'][$i];
-                    }
-
-                    $jsonString = json_encode($final_array, JSON_PRETTY_PRINT);
-                    // $jsonString = json_encode($final_array);
-
-                    $curl = curl_init();
-                    curl_setopt_array($curl, array(
-                        CURLOPT_URL => $url,
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_ENCODING => '',
-                        CURLOPT_MAXREDIRS => 10,
-                        CURLOPT_TIMEOUT => 0,
-                        CURLOPT_FOLLOWLOCATION => true,
-                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                        CURLOPT_CUSTOMREQUEST => "GET",
-                        CURLOPT_POSTFIELDS => $jsonString ,
-                        CURLOPT_HTTPHEADER => array(
-                            'Content-Type: application/json', // Specify content type as JSON
-                        ),
-                    ));
-
-                    $response = curl_exec($curl);
-
-                    $data['title'] = "API Request Result";
-                    $data['response'] = $response;
-                    $this->session->set_userdata('api_request_result', $response);
-                }elseif(!is_array($rightFormatData)){
-                    $data['title'] = "API Request Result";
-                    $data['response'] = $rightFormatData;
-                    $this->session->set_userdata('api_request_result', $rightFormatData);
-                }elseif($url == null){
-                    $data['title'] = "API Request Result";
-                    $data['response'] = "Please add the api end point";
-                    $this->session->set_userdata('api_request_result', $data);
-                }else{
-                    $data['title'] = "API Request Result";
-                    $data['response'] = $isValidation;
-                    $this->session->set_userdata('api_request_result', $isValidation);
-                }
-                redirect('bangara_module/bangara_api/campaign_api_request_result');
-            }
-        }else{
-            // $data['api_data'] = $this->getApiData();
-            $this->load->view('campaign_create', $data);
-        }
-        
-    }
-
-    public function getLoyalityCampaignList(){
+    public function getLoyalityCampaignList($email ,$tenentID = null){
 
         $url = $this->config->item('loyality_url');
-        $userId = get_staff_user_id();
-        $email = $this->Bangara_model->getStaffEmail($userId);
+        // $userId = get_staff_user_id();
+        // $email = $this->Bangara_model->getStaffEmail($userId);
         // $email = "exampleparner@loyalty.keoscx.com"; 
         // Build the JSON string
         $postFields = json_encode(array(
@@ -570,15 +492,20 @@ class Bangara_api extends AdminController
         $data['all_partner'] = $this->getLoyalityAllPartnerList();
         $data['url'] = $this->config->item('loyality_url'); 
 
-        if(is_staff_logged_in()){
-            $data['loyality_api_data'] = $this->getLoyalityCampaignList() ?? null;
-        }else{
-            $data['all_partner'] = $this->getLoyalityAllPartnerList() ?? null;
+        $this->load->database();
+        $query = $this->db->get(db_prefix().'campaign_api_settings');
+        $campaign_api_settings = $query->row();
+
+        if($campaign_api_settings != null){
+            $data['loyality_email'] = $campaign_api_settings->loyality_email ;
+            $data['loyality_tenent_id'] = $campaign_api_settings->loyality_tenent_id ;
         }
-        
+
+        $data['loyality_api_data'] = $this->getLoyalityCampaignList($data['loyality_email'] , $data['loyality_tenent_id'] );
+
         $this->load->helper('url');
+
         $data['title'] = "User QR Code Manage";
-        
 
         if (isset($_SESSION['expire_time']) && time() > $_SESSION['expire_time']) {
             // Unset all session variables
@@ -589,15 +516,12 @@ class Bangara_api extends AdminController
 
             $formData = $this->input->post();
 
-            $this->load->database();
-            $query = $this->db->get(db_prefix().'campaign_api_settings');
-            $campaign_api_settings = $query->row();
+            echo "<pre>";
+            var_dump($formData);
+            die();
 
-            if($campaign_api_settings != null){
-                $url = $campaign_api_settings->url ;
-            }else{
-                $url = null ;
-            }
+            $url = $this->config->item('loyality_url').'ll/user-campaign-qr-data';
+
            
             if( isset($formData['CampaignID']) && isset($formData['ProductID']) && isset($formData['PurchaseValue']) && isset($formData['OrderID']) && isset($formData['phone']) ){
                 
@@ -622,7 +546,7 @@ class Bangara_api extends AdminController
                     for ($i = 0; $i < $count; $i++) {
                         $product = array(
                             "productId" => $formData["ProductID"][$i],
-                            "sku" => $formData["sku"][$i]
+                            "remarks" => $formData["remarks"][$i]
                         );
                         $newData["products"][] = $product;
                     }
@@ -662,6 +586,10 @@ class Bangara_api extends AdminController
                 }elseif($url == null){
                     $data['title'] = "API Request Result";
                     $data['response'] = "Please add the api end point";
+                    $this->session->set_userdata('api_request_result', $data);
+                }elseif($data['loyality_email'] == null){
+                    $data['title'] = "API Request Result";
+                    $data['response'] = "Please add the loyality email";
                     $this->session->set_userdata('api_request_result', $data);
                 }else{
                     $data['title'] = "API Request Result";

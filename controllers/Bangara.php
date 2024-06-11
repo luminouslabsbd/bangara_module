@@ -24,6 +24,8 @@ class Bangara extends ClientsController {
         $this->load->model('Bangara_model');
         $this->load->model('clients_model');
         $this->load->model('projects_model');
+        // for SAAS User
+        $this->load->model('Bsaas_model');
     }
 
     // Invocie Create , Exist , Customer Create and add  Subcriber
@@ -547,7 +549,7 @@ class Bangara extends ClientsController {
         }
     }
 
-     // Check User Domain Is Exists or Not
+    // Check User Domain Is Exists or Not
     public function check_domain_is_exists(){
 
         if($this->input->method() != "post"){
@@ -885,6 +887,8 @@ class Bangara extends ClientsController {
             mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
         );
     }
+
+    
 
     
 

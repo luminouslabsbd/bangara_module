@@ -297,5 +297,17 @@ class Bangara_model extends App_Model
 
     }
 
+    public function getUserIsAdminOrNot()
+    {
+        $this->load->model('staff_model');
+        $staff_id = get_staff_user_id();
+        $staff = $this->staff_model->get($staff_id);
+        $staff_admin = $staff;
+
+        // Now you can use $staff_email as needed
+        echo $staff_email;
+    }
+    
+
     
 }

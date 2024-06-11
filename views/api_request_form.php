@@ -52,19 +52,6 @@
 
                         </div>
                         
-                        <!-- <div class="form-group" app-field-wrapper="content_type">
-                            <label for="content_type" class="control-label"></label><span style="color:red">*</span>
-                            <input type="text" id="content_type" name="content_type" require class="form-control">
-                            <input type="text" id="content_type" name="content_type" require class="form-control">
-                        </div> -->
-
-                        <!-- <div class="form-group" app-field-wrapper="body_data">
-                            <label for="body_data" class="control-label">Body Data - Json</label><span style="color:red">*</span>
-                            <textarea placeholder='{"customer_id": "4673","project_id": "111","debt_number": "7648956", "channel": "test"}' required class="form-control" id="body_data" name="body_data" rows="8" cols="50"></textarea>
-                        </div> -->
-
-
-                        
 
                     </div>
                     

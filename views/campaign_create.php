@@ -97,12 +97,12 @@
                 <div class="modal-body">
                     <div class="wrapper-spinner-form">
                         <div class="col-md-12">
-                            <h5>Api Url</h5>
-                            <input type="text" name="url" require class="dynamic-input form-control" />
+                            <h5>Loyality Email <span style="color:red">*</span>  </h5>
+                            <input type="text" name="loyality_email" require class="dynamic-input form-control" />
                         </div>
                         <div class="col-md-12">
-                            <h5>Api Key</h5>
-                            <input type="text" name="api_key" class="dynamic-input form-control" />
+                            <h5>Loyality Tenent ID</h5>
+                            <input type="text" name="loyality_tenent_id" class="dynamic-input form-control" />
                         </div>
                     </div>
                 </div>
@@ -178,7 +178,7 @@
                             <h6>phone</h6>
                         </div>
                         <div class="col-md-12">
-                            <h6>Required - (Customer whatsapp phone number)</h6>
+                            <h6>Required - (You Whatsapp Bot  phone number with country code)</h6>
                         </div>
                     </div>
 
@@ -252,10 +252,9 @@
                                     <option value="VoiceBot">Tap To Win</option>
                                 </select>
                             </div>
-
-                            <?php if(is_client_logged_in()) {?>
+                            
                             <div class="form-group col-md-10" app-field-wrapper="campaign_type">
-                                <label for="email" class="control-label">Campaign Name</label><span style="color:red">*</span>
+                                <label for="email" class="control-label">Campaign Name </label><span style="color:red">*</span>
                                 <select id="CampaignID" name="CampaignID" require class="form-control">
                                     <?php if($loyality_api_data != null && isset($loyality_api_data['data'])) {
                                         
@@ -266,71 +265,50 @@
                                         <?php }
                                     }?>
                                 </select>
-                                <input type="hidden" name="TenantID" id="TenantID" value="<?php  if( $loyality_api_data != null && isset($loyality_api_data['data']) )  echo $loyality_api_data['data']['partnerId'] ?>">
-                            </div>
-                            <?php }?>
-
-                            <?php if(is_staff_logged_in()) {?>
-
-                            <div class="form-group col-md-10" app-field-wrapper="campaign_type">
-                                <label for="email" class="control-label">Partner Name</label><span style="color:red">*</span>
-                                <select id="partnerID" name="partnerID" require class="form-control">
-                                    <?php if($all_partner != null && isset($all_partner['data'])) {
-                                        foreach($all_partner['data'] as $partner) {
-                                            $selected = isset($old_form_data['partnerID']) && $old_form_data['partnerID'] == $partner['id'] ? 'selected' : '';
-                                        ?>
-                                        <option value="<?php echo $partner['id'] ?>" <?php echo $selected ?>><?php echo $partner['name'] . ' - '. $partner['id'] ?></option>
-                                        <?php }
-                                    }?>
-                                </select>
+                                <input type="hidden" name="TenantID" id="TenantID" value="<?php  if( $loyality_api_data != null && isset($loyality_api_data['data']) )  echo $loyality_api_data['data']['partner']['id'] ?>">
                             </div>
 
-                            <div class="form-group col-md-10" app-field-wrapper="campaign_type">
-                                <label for="email" class="control-label">Campaign Name</label><span style="color:red">*</span>
-                                <select id="CampaignID" name="CampaignID" required class="form-control">
-                                    <!-- Campaign options will be populated dynamically by JavaScript -->
-                                </select>
-                                <input type="hidden" name="TenantID" id="TenantID" value="">
-                            </div>
-
-                            
-                            <?php }?>
-
-                            
                             <div class="form-group col-md-10">
 
                                 <div class="spinner-form-wrapper">
 
                                     <div class="wrapper-spinner-form">
                                         <div class="spinner-fomr-col">
-                                            <h5>Phone Number <span style="color:red">*</span></h5>
-                                            <input type="text" id="phone" value="<?php echo isset($old_form_data['phone']) ? $old_form_data['phone'] : ''; ?>" require name="phone"  placeholder="Enter Customer Phone Number With Country Code" class="dynamic-input form-control" />
+                                            <h5>Whatsapp Bot Phone Number <span style="color:red">*</span></h5>
+                                            <input 
+                                                type="text" 
+                                                id="phone" 
+                                                value="<?php 
+                                                    if ($loyality_api_data != null && isset($loyality_api_data['data'])) {
+                                                        echo $loyality_api_data['data']['partner']['phone'];
+                                                    } elseif (isset($old_form_data['phone'])) {
+                                                        echo $old_form_data['phone'];
+                                                    } else {
+                                                        echo '';
+                                                    }
+                                                ?>" 
+                                                required 
+                                                name="phone"  
+                                                placeholder="Enter Whatsapp Bot Phone Number With Country Code" 
+                                                class="dynamic-input form-control" 
+                                                />
                                         </div>
                                     </div>
 
-                                    <!-- <div class="wrapper-spinner-form">
-                                        <div class="spinner-fomr-col">
-                                            <h5>Product ID <span>*</span></h5>
-                                            <input type="text" id="ProductID" value="<?php echo isset($old_form_data['ProductID']) ? $old_form_data['ProductID'] : ''; ?>" require name="ProductID" placeholder="Enter Product ID" class="dynamic-input form-control" />
-                                        </div>
-                                    </div> -->
 
-                                    
                                     <div id="spinner-form-container">
                                         <div class="wrapper-spinner-form">
                                             <div class="spinner-fomr-col-5">
                                                 <h5>Product ID <span style="color:red">*</span></h5>
-                                                <input type="text" id="ProductID" value="" require name="ProductID[]" placeholder="Enter Product ID" class="dynamic-input form-control" />
+                                                <input type="number" id="ProductID" value="" require name="ProductID[]" placeholder="Enter Product ID" class="dynamic-input form-control" />
                                             </div>
                                             <div class="spinner-fomr-col-5">
-                                                <h5>SKU <span style="color:red">*</span></h5>
-                                                <input type="text" id="sku" value="" require name="sku[]" placeholder="Enter SKU ID" class="dynamic-input form-control" />
+                                                <h5>Remarks</h5>
+                                                <input type="text" id="remarks" value="" require name="remarks[]" placeholder="Enter Remarks If Have Any Comments" class="dynamic-input form-control" />
                                             </div>
                                             <div class="spinner-fomr-col-2">
                                                 <button type="button" id="addMore" class="btn btn-primary">Add More</button>
                                             </div>
-
-                                            <!-- <button type="button" class="removeButton">Remove</button> -->
                                         </div>
                                     </div>
 
@@ -343,8 +321,8 @@
 
                                     <div class="wrapper-spinner-form">
                                         <div class="spinner-fomr-col">
-                                            <h5>Order ID<span style="color:red">*</span></h5>
-                                            <input type="text" id="OrderID" value="<?php echo isset($old_form_data['OrderID']) ? $old_form_data['OrderID'] : ''; ?>" require name="OrderID" placeholder="Enter Customer Order ID or Invoice ID" class="dynamic-input form-control" />
+                                            <h5>Order ID</h5>
+                                            <input type="text" id="OrderID" value="<?php echo isset($old_form_data['OrderID']) ? $old_form_data['OrderID'] : ''; ?>" require name="OrderID" placeholder="Enter Invoice ID Or Order ID" class="dynamic-input form-control" />
                                         </div>
                                     </div>
 
@@ -455,7 +433,7 @@ $(document).ready(function () {
    
     // Function to check if all required inputs are filled
     function checkInputs() {
-        const inputs = document.querySelectorAll('#CampaignID, #phone, #ProductID, #PurchaseValue, #OrderID');
+        const inputs = document.querySelectorAll('#CampaignID, #phone, #ProductID, #PurchaseValue');
         for (let input of inputs) {
             if (input.value.trim() === '') {
                 return false;
@@ -471,7 +449,7 @@ $(document).ready(function () {
     }
 
     // Add event listeners to input fields
-    const inputFields = document.querySelectorAll('#CampaignID, #phone, #ProductID, #PurchaseValue, #OrderID');
+    const inputFields = document.querySelectorAll('#CampaignID, #phone, #ProductID, #PurchaseValue');
     inputFields.forEach(input => {
         input.addEventListener('input', updateButtonState);
     });
@@ -530,8 +508,8 @@ $(document).ready(function () {
                     <input type="text" name="ProductID[]" placeholder="Enter Product ID" class="dynamic-input form-control" />
                 </div>
                 <div class="spinner-fomr-col-5">
-                    <h5>SKU <span style="color:red">*</span></h5>
-                    <input type="text" name="sku[]" placeholder="Enter SKU ID" class="dynamic-input form-control" />
+                    <h5>Remarks <span style="color:red">*</span></h5>
+                    <input type="text" name="remarks[]" placeholder="Enter Remarks If Have Any Comments" class="dynamic-input form-control" />
                 </div>
 
                 <button type="button" class="remove-input removeButton btn btn-danger">Remove</button>
