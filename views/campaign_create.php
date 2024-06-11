@@ -88,7 +88,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">API Setting</h5>
+                <h5 class="modal-title" id="exampleModalLabel">API Setting - Settings Your Loyalty Platform Email & Tenent ID</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -97,11 +97,11 @@
                 <div class="modal-body">
                     <div class="wrapper-spinner-form">
                         <div class="col-md-12">
-                            <h5>Loyality Email <span style="color:red">*</span>  </h5>
+                            <h5>Loyalty Email <span style="color:red">*</span>  </h5>
                             <input type="text" name="loyality_email" require class="dynamic-input form-control" />
                         </div>
                         <div class="col-md-12">
-                            <h5>Loyality Tenent ID</h5>
+                            <h5>Loyalty Tenent ID</h5>
                             <input type="text" name="loyality_tenent_id" class="dynamic-input form-control" />
                         </div>
                     </div>
