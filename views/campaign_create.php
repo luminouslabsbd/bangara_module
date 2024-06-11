@@ -420,8 +420,8 @@ $(document).ready(function () {
                 dataType: 'json',
                 success: function(data){
                     if(data !== false){
-                        $('#apiForm input[name="url"]').val(data.url);
-                        $('#apiForm input[name="api_key"]').val(data.api_key);
+                        $('#apiForm input[name="loyality_email"]').val(data.loyality_email);
+                        $('#apiForm input[name="loyality_tenent_id"]').val(data.loyality_tenent_id);
                     } else {
                         // Handle if data is not found
                     }
