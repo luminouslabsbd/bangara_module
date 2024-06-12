@@ -516,10 +516,6 @@ class Bangara_api extends AdminController
 
             $formData = $this->input->post();
 
-            echo "<pre>";
-            var_dump($formData);
-            die();
-
             $url = $this->config->item('loyality_url').'ll/user-campaign-qr-data';
 
            
