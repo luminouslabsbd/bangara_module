@@ -213,7 +213,7 @@ class Bangara_api extends AdminController
             }
             
 
-            $url = base_url('index.php/admin/bangara_module/bangara/create_invoice');
+            $url = base_url('admin/bangara_module/bangara/create_invoice');
             
             // $dataArray = array(
             //     'email' => $formData['email'],
@@ -516,7 +516,7 @@ class Bangara_api extends AdminController
 
             $formData = $this->input->post();
 
-            $url = $this->config->item('loyality_url').'ll/user-campaign-qr-data';
+            $url = $this->config->item('loyality_url').'v1/ll/user-campaign-qr-data';
 
            
             if( isset($formData['CampaignID']) && isset($formData['ProductID']) && isset($formData['PurchaseValue']) && isset($formData['OrderID']) && isset($formData['phone']) ){
